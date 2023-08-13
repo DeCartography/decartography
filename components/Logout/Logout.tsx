@@ -12,7 +12,7 @@ function Logout({ className, ...props }: { className?: string }) {
   };
   return (
     <div {...props}>
-      <Button variant={"destructive"} disabled={loading} onClick={handleClick}>
+      <Button variant={"default"} disabled={loading} onClick={handleClick}>
         {loading ? (
           <UpdateIcon className="mr-2 h-4 w-4 animate-spin" />
         ) : (
