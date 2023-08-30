@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 
 import Image from "next/image";
 
-function WalletCard() {
+function WalletCard({ image, address }: { image: string; address: string }) {
   const [active, setActive] = useState(true);
 
   const imageURL = encodeURIComponent(

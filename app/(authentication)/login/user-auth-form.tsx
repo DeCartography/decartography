@@ -4,8 +4,8 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+
+import { handleLogin } from "@/lib/auth";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -45,9 +45,20 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     event.preventDefault();
     setIsLoading(true);
 
-    setTimeout(() => {
+    try {
+      const token = await handleLogin();
+      if (token instanceof Error) {
+        // Handle the error case
+        console.error(token);
+      } else {
+        // Handle the success case with the token
+        console.log("Successfully logged in with token:", token);
+      }
+    } catch (err) {
+      console.error("An error occurred during login:", err);
+    } finally {
       setIsLoading(false);
-    }, 3000);
+    }
   }
 
   return (
