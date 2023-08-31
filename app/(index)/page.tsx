@@ -19,10 +19,10 @@ async function getTransactions() {
 export default function DashboardPage() {
   return (
     <>
-      <Tabs defaultValue="task" className="space-y-4">
+      <Tabs defaultValue="account" className="space-y-4">
         <TabsList>
           <TabsTrigger value="account">My Account</TabsTrigger>
-          <TabsTrigger value="wallets">Wlallets</TabsTrigger>
+          <TabsTrigger value="wallets">Wallets</TabsTrigger>
           <TabsTrigger value="task">Task</TabsTrigger>
         </TabsList>
         <TabsContent value="account">
