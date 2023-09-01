@@ -6,6 +6,13 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 import { handleLogin } from "@/lib/auth";
+import { createCookie } from "@/lib/actions";
+import { ToastAction } from "@/components/ui/toast";
+
+import { useToast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
+
+import jwtDecode from "jwt-decode";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -40,6 +47,8 @@ const Icons = {
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const { toast } = useToast();
+  const router = useRouter();
 
   async function onSubmit(event: React.SyntheticEvent) {
     event.preventDefault();
@@ -49,10 +58,29 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
       const token = await handleLogin();
       if (token instanceof Error) {
         // Handle the error case
-        console.error(token);
+        console.log(token);
+        toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description:
+            "Please ensure you have a score above 15 on Gitcoin Passport.",
+          action: <ToastAction altText="Try again">Try again</ToastAction>,
+        });
       } else {
         // Handle the success case with the token
         console.log("Successfully logged in with token:", token);
+        const decoded: JWTContent = jwtDecode(token);
+        await createCookie({
+          name: "_auth",
+          value: token,
+          httpOnly: true,
+          expires: (decoded?.exp || 0) * 1000,
+        });
+        toast({
+          title: "Yay! You're logged in.",
+          description: "Redirecting...",
+        });
+        return router.push("/");
       }
     } catch (err) {
       console.error("An error occurred during login:", err);

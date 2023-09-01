@@ -2,13 +2,15 @@
 
 import { cookies } from "next/headers";
 
-async function create(name: string, value: string, options: any) {
-  cookies().set(name, value, options);
-  // or
-  cookies().set({
-    name: "name",
-    value: "lee",
-    httpOnly: true,
-    path: "/",
+export async function createCookie(options: AuthCookie) {
+  "use server";
+  cookies().set(options.name, options.value, {
+    httpOnly: options.httpOnly,
+    expires: options.expires,
   });
+}
+
+export async function deleteCookie(name: string) {
+  "use server";
+  cookies().delete(name);
 }
