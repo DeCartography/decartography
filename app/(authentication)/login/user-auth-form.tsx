@@ -76,6 +76,12 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           httpOnly: true,
           expires: (decoded?.exp || 0) * 1000,
         });
+        await createCookie({
+          name: "address",
+          value: decoded?.address,
+          httpOnly: true,
+          expires: (decoded?.exp || 0) * 1000,
+        });
         toast({
           title: "Yay! You're logged in.",
           description: "Redirecting...",

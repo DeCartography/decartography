@@ -4,25 +4,27 @@ import { Transaction, columns } from "@/components/ActivityTable/Columns";
 import DataTable from "@/components/ActivityTable";
 
 export default function Wallets({
+  balance,
   transactions,
 }: {
+  balance: number;
   transactions: Transaction[];
 }) {
   return (
-    <div className="space-y-8 mt-5">
+    <div className="mt-5 space-y-8">
       <div className="space-y-2">
         <p className="text-sm text-muted-foreground">Total Amount</p>
-        <p className="text-3xl">0.58 ETH (1,882 USD)</p>
+        <p className="text-3xl">{balance} ETH (X USD)</p>
         <p>
           <a
             href="https://google.com"
-            className="text-sm text-primary font-semibold hover:underline hover:underline-offset-4"
+            className="text-sm font-semibold text-primary hover:underline hover:underline-offset-4"
           >
             More details in explorer
           </a>
         </p>
       </div>
-      <div className="flex gap-4 justify-between flex-wrap md:flex-nowrap">
+      <div className="flex flex-wrap justify-between gap-4 md:flex-nowrap">
         <Card className="w-full bg-primary text-white">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Main</CardTitle>
