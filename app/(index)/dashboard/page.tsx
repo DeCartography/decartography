@@ -3,7 +3,7 @@ import { Metadata } from "next";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { formatTransactions } from "@/lib/helpers";
-import { Transaction, transactions } from "@/components/ActivityTable/Columns";
+import { Transaction } from "@/components/ActivityTable/Columns";
 import { cookies } from "next/headers";
 import AccountView from "./account";
 import WalletsView from "./wallets";
@@ -11,18 +11,42 @@ import TaskView from "./tasks";
 
 export const metadata: Metadata = {
   title: "Dashboard",
-  description: "Example dashboard app using the components.",
+  description: "Decartography | Dashboard",
 };
 
 interface TransactionData {
   transactions: any;
   balance: any;
+  ethToUSD: any;
+  wallet: any;
+  gitcoinPassportScore: any;
 }
 
 async function getTransactions(): Promise<TransactionData> {
   try {
     const wallet = (await cookies().get("address"))?.value;
-    if (!wallet) return { transactions: [], balance: 0 };
+    if (!wallet)
+      return {
+        transactions: [],
+        balance: 0,
+        ethToUSD: 0,
+        wallet: "",
+        gitcoinPassportScore: 0,
+      };
+
+    const ethToUSD = (
+      await (
+        await fetch("https://api.coinbase.com/v2/exchange-rates?currency=ETH")
+      ).json()
+    ).data.rates.USD;
+
+    const gitcoinPassportScore = await (
+      await (
+        await fetch(
+          `${process.env.BACKEND_URL}/api/get-passport-score?address=${wallet}`,
+        )
+      ).json()
+    ).score;
 
     const balanceRes = await fetch(
       `${process.env.BACKEND_URL}/api/get-eth?address=${wallet}`,
@@ -36,15 +60,27 @@ async function getTransactions(): Promise<TransactionData> {
       (await transactionsRes.json()).result,
       wallet,
     );
-    console.log({ transactions, balance });
-    return { transactions: transactions as Transaction[], balance };
+    return {
+      transactions: transactions as Transaction[],
+      balance,
+      ethToUSD,
+      wallet,
+      gitcoinPassportScore,
+    };
   } catch (e) {
-    return { transactions: [], balance: 0 };
+    return {
+      transactions: [],
+      balance: 0,
+      ethToUSD: 0,
+      wallet: "",
+      gitcoinPassportScore: 0,
+    };
   }
 }
 
 export default async function DashboardPage() {
-  const { transactions, balance } = await getTransactions();
+  const { transactions, balance, ethToUSD, wallet, gitcoinPassportScore } =
+    await getTransactions();
 
   return (
     <>
@@ -55,12 +91,13 @@ export default async function DashboardPage() {
           <TabsTrigger value="task">Task</TabsTrigger>
         </TabsList>
         <TabsContent value="account">
-          <AccountView />
+          <AccountView wallet={wallet} passportScore={gitcoinPassportScore} />
         </TabsContent>
         <TabsContent value="wallets">
           <WalletsView
             balance={balance}
             transactions={transactions as Transaction[]}
+            ethToUSD={ethToUSD}
           />
         </TabsContent>
         <TabsContent value="task">

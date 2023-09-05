@@ -3,15 +3,21 @@ import { Button } from "@/components/ui/button";
 
 import ProfilePicture from "@/components/ProfilePicture";
 
-export default function Account() {
+export default function Account({
+  wallet,
+  passportScore,
+}: {
+  wallet: string;
+  passportScore: number;
+}) {
   return (
     <div className="space-y-4">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="flex flex-col justify-center items-center gap-4">
+        <Card className="flex flex-col items-center justify-center gap-4">
+          <div className="pb-2" />
           <ProfilePicture walletAddress="0xF60fB76e6AD847882bFe390331" />
-          <p className="text-xs truncate text-muted-foreground">
-            0xF60fB76e6AD847882bFe390331
-          </p>
+          <p className="truncate text-[10px] text-muted-foreground">{wallet}</p>
+          <div className="pb-2" />
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -34,7 +40,7 @@ export default function Account() {
             </svg>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">42.43</div>
+            <div className="text-2xl font-bold">{passportScore}</div>
             <p className="text-xs text-muted-foreground">
               Provided by{" "}
               <a
@@ -102,7 +108,7 @@ export default function Account() {
             <div className="flex flex-col gap-4">
               By starting a task as crowd-sourcing, you can earn ~10$ ETH. You
               can also earn more efficiently by staking before starting a task.
-              <div className="flex gap-2 flex-col w-fit">
+              <div className="flex w-fit flex-col gap-2">
                 <Button variant={"outline"} disabled>
                   Stake before start (Reward ~10x)
                 </Button>

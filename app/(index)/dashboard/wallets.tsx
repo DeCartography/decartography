@@ -6,15 +6,19 @@ import DataTable from "@/components/ActivityTable";
 export default function Wallets({
   balance,
   transactions,
+  ethToUSD,
 }: {
   balance: number;
   transactions: Transaction[];
+  ethToUSD: number;
 }) {
   return (
     <div className="mt-5 space-y-8">
       <div className="space-y-2">
         <p className="text-sm text-muted-foreground">Total Amount</p>
-        <p className="text-3xl">{balance} ETH (X USD)</p>
+        <p className="text-3xl">
+          {balance} ETH ({(balance * ethToUSD).toFixed(2)} USD)
+        </p>
         <p>
           <a
             href="https://google.com"
@@ -44,7 +48,7 @@ export default function Wallets({
           </CardHeader>
           <CardContent>
             <p className="text-xs opacity-80">Balance</p>
-            <div className="text-2xl font-bold">0.48 ETH</div>
+            <div className="text-2xl font-bold">{balance} ETH</div>
           </CardContent>
         </Card>
         <Card className="w-full">
