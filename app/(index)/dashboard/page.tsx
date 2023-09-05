@@ -104,23 +104,6 @@ export default async function DashboardPage() {
           <TaskView />
         </TabsContent>
       </Tabs>
-      {/* <div className="flex-col md:flex">
-        <div className="md:w-8/12 ml-auto mr-auto md:pt-20">
-          <div className="flex-1 space-y-4 p-8 pt-6">
-            <div className="flex items-center justify-between space-y-2">
-              <h2 className="text-xl md:text-3xl font-bold tracking-tight graydient">
-                Decartography
-              </h2>
-
-              <div className="flex items-center space-x-2">
-                <Logout />
-                <ThemeToggle />
-              </div>
-            </div>
-            <p>Here </p>
-          </div>
-        </div>
-      </div> */}
     </>
   );
 }

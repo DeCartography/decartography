@@ -45,7 +45,7 @@ export default function Account({
               Provided by{" "}
               <a
                 className="font-bold hover:text-gray-400"
-                href="https://passport.gitcoin.co/#/"
+                href="https://passport.gitcoin.co/#/dashboard"
                 target={"_blank"}
               >
                 Gitcoin Passport
@@ -106,12 +106,8 @@ export default function Account({
           </CardHeader>
           <CardContent>
             <div className="flex flex-col gap-4">
-              By starting a task as crowd-sourcing, you can earn ~10$ ETH. You
-              can also earn more efficiently by staking before starting a task.
+              By starting a task as crowd-sourcing, you can earn ~10$ ETH.
               <div className="flex w-fit flex-col gap-2">
-                <Button variant={"outline"} disabled>
-                  Stake before start (Reward ~10x)
-                </Button>
                 <Button>Start Now</Button>
               </div>
             </div>
