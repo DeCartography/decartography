@@ -2,7 +2,7 @@ import { Metadata } from "next";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { formatTransactions } from "@/lib/helpers";
+import { formatTransactions, convertDictionaryToArray } from "@/lib/helpers";
 import { Transaction } from "@/components/ActivityTable/Columns";
 import { cookies } from "next/headers";
 import AccountView from "./account";
@@ -22,9 +22,37 @@ interface TransactionData {
   gitcoinPassportScore: any;
 }
 
+async function getNFTs(amount: number = 6) {
+  const _auth = await (await cookies().get("_auth"))?.value;
+  const wallet = await (await cookies().get("address"))?.value;
+
+  if (!wallet) return [];
+
+  try {
+    const res = await fetch(
+      `${process.env.BACKEND_URL}/api/get-addresses?amount=${amount}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${_auth}`,
+        },
+      },
+    );
+
+    const addresses = await convertDictionaryToArray(await res.json());
+    console.log(addresses);
+    return addresses;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 async function getTransactions(): Promise<TransactionData> {
   try {
-    const wallet = (await cookies().get("address"))?.value;
+    const _auth = await (await cookies().get("_auth"))?.value;
+    const wallet = await (await cookies().get("address"))?.value;
+
     if (!wallet)
       return {
         transactions: [],
@@ -44,17 +72,35 @@ async function getTransactions(): Promise<TransactionData> {
       await (
         await fetch(
           `${process.env.BACKEND_URL}/api/get-passport-score?address=${wallet}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${_auth}`,
+            },
+          },
         )
       ).json()
     ).score;
 
     const balanceRes = await fetch(
       `${process.env.BACKEND_URL}/api/get-eth?address=${wallet}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${_auth}`,
+        },
+      },
     );
     const balance = parseInt((await balanceRes.json()).balance) / 1e18;
 
     const transactionsRes = await fetch(
       `${process.env.BACKEND_URL}/api/get-txs?address=${wallet}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${_auth}`,
+        },
+      },
     );
     const transactions = await formatTransactions(
       (await transactionsRes.json()).result,
@@ -82,6 +128,8 @@ export default async function DashboardPage() {
   const { transactions, balance, ethToUSD, wallet, gitcoinPassportScore } =
     await getTransactions();
 
+  const nfts = await getNFTs();
+
   return (
     <>
       <Tabs defaultValue="account" className="space-y-4">
@@ -101,7 +149,7 @@ export default async function DashboardPage() {
           />
         </TabsContent>
         <TabsContent value="task">
-          <TaskView />
+          <TaskView nfts={nfts as any} />
         </TabsContent>
       </Tabs>
     </>

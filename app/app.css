@@ -1,9 +1,6 @@
 .graydient {
-  background: linear-gradient(
-      270deg,
-      rgba(255, 255, 255, 0.15),
-      rgba(0, 0, 0, 0.15)
-    ),
+  background:
+    linear-gradient(270deg, rgba(255, 255, 255, 0.15), rgba(0, 0, 0, 0.15)),
     radial-gradient(
         at top center,
         rgba(255, 255, 255, 0.4) 0%,
@@ -28,4 +25,28 @@
   100% {
     background-position: 0% 50%;
   }
+}
+
+.grid-parent {
+  display: grid;
+  grid-template-columns: repeat(3, 300px); /* 3 columns */
+  grid-template-rows: repeat(3, 300px); /* 3 rows  */
+  gap: 5px; /* 50 pixels of space added between rows and 30 pixels added between columns  */
+}
+
+.grid-item {
+  border: thin gray solid;
+  padding: 10px;
+}
+
+.carousel {
+  padding: 10px 10px 0;
+  border-radius: 4px;
+  width: 250px;
+  margin: auto;
+}
+
+.carousel__main {
+  border-radius: 4px;
+  height: 250px;
 }

@@ -1,23 +1,32 @@
 import { Button } from "@/components/ui/button";
 import WalletCard from "@/components/WalletCard";
 
-export default function Tasks() {
+interface NFT {
+  address: string;
+  links: string[];
+}
+
+export default function Tasks({ nfts }: { nfts: NFT[] }) {
   return (
     <>
-      <div className="flex flex-col gap-5 xl:flex-row xl:justify-between xl:gap-0">
-        <div className="flex flex-col gap-6 xl:grid xl:max-w-4xl xl:auto-cols-min xl:auto-rows-min xl:grid-cols-3 xl:grid-rows-2">
-          <WalletCard />
-          <WalletCard />
-          <WalletCard />
-          <WalletCard />
-          <WalletCard />
-          <WalletCard />
+      <div className="flex flex-col gap-5 lg:flex-row">
+        <div className="flex-1 flex-wrap">
+          <div className="flex flex-col items-center gap-8 lg:grid lg:grid-cols-3 lg:grid-rows-3">
+            {nfts.map((nft) => (
+              <div key={nft.address} className="max-w-[300px]">
+                {/* <img src={nft.links[0]} style={{ width: "100%" }} /> */}
+                <WalletCard images={nft.links} />
+              </div>
+            ))}
+          </div>
         </div>
-        <div className="order-first flex gap-4 self-start xl:order-last xl:ml-auto xl:mr-auto xl:flex-col xl:gap-8 xl:self-center">
-          <Button size="lg">Submit</Button>
-          <Button variant={"outline"} size="lg">
-            Swap
-          </Button>
+        <div className="flex flex-shrink-0">
+          <div className="ml-auto mr-auto flex gap-4 self-start lg:flex-col">
+            <Button size="lg">Submit</Button>
+            <Button variant={"outline"} size="lg">
+              Swap
+            </Button>
+          </div>
         </div>
       </div>
     </>

@@ -30,3 +30,15 @@ export async function formatTransactions(
 
   return formattedTransactions;
 }
+
+export async function convertDictionaryToArray(dictionary: any) {
+  const resultArray = [];
+
+  for (const key in dictionary) {
+    const value = dictionary[key];
+    const obj = { address: key, links: value };
+    resultArray.push(obj);
+  }
+
+  return resultArray;
+}

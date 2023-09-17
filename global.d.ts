@@ -13,3 +13,5 @@ interface AuthCookie {
   expires: number;
   httpOnly: boolean;
 }
+
+declare module "flat-carousel";

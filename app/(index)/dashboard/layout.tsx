@@ -1,5 +1,6 @@
 import "@/app/globals.css";
 import "@/app/app.css";
+import "react-caroussel/dist/index.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
