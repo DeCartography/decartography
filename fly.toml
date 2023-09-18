@@ -8,6 +8,10 @@ primary_region = "ewr"
 
 [build]
 
+[env]
+  NEXT_PUBLIC_BACKEND_URL = "https://decartography.fly.dev"
+  BACKEND_URL = "https://decartography.fly.dev"
+
 [http_service]
   internal_port = 3000
   force_https = true
