@@ -25,7 +25,7 @@ export async function getNFTs(amount: number = 6) {
 
   try {
     const res = await fetch(
-      `${process.env.BACKEND_URL}/api/get-addresses?amount=${amount}`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/get-addresses?amount=${amount}`,
       {
         method: "GET",
         headers: {
