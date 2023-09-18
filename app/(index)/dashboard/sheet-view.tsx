@@ -14,7 +14,7 @@ export default function SheetView() {
   return (
     <Sheet>
       <div className="flex flex-col gap-4">
-        By starting a task as crowd-sourcing, you can earn ~10$ ETH.
+        By starting a task as crowd-sourcing, you can earn around ~10$ ETH.
         <div className="flex w-fit flex-col gap-2">
           <SheetTrigger asChild>
             <Button>Start Now</Button>
