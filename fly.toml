@@ -6,8 +6,7 @@
 app = "decartography-dashboard"
 primary_region = "ewr"
 
-[build.args]
-  BACKEND_URL="https://decartography.fly.dev"
+[build]
 
 [http_service]
   internal_port = 3000
