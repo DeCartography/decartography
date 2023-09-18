@@ -1,7 +1,9 @@
 import { ethers } from "ethers";
 
 export const handleLogin = async (): Promise<string | Error> => {
-  const baseUrl = process.env.BACKEND_URL || "http://localhost:1337"; // Fallback to empty string if not defined
+  console.log(process.env.BACKEND_URL);
+  const baseUrl =
+    process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:1337"; // Fallback to empty string if not defined
   try {
     const connect = async (): Promise<string | null> => {
       try {
