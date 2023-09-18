@@ -9,10 +9,21 @@ interface NFT {
   links: string[];
 }
 
-export default function Tasks({ nfts: initialNfts }: { nfts: NFT[] }) {
-  const [nfts, setNfts] = useState(initialNfts);
+export default function Tasks() {
+  const [nfts, setNfts] = useState<NFT[] | null>(null);
   const [selectedWallets, setSelectedWallets] = useState<string[]>([]);
   const [isSwapping, setIsSwapping] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchInitialWallets();
+    setLoading(false);
+  }, []);
+
+  const fetchInitialWallets = async () => {
+    const initialWallets = await getNFTs(6);
+    await setNfts(initialWallets as NFT[]);
+  };
 
   const toggleWallet = (address: string) => {
     if (selectedWallets.length === 3 && !selectedWallets.includes(address)) {
@@ -28,6 +39,7 @@ export default function Tasks({ nfts: initialNfts }: { nfts: NFT[] }) {
   };
 
   const handleSwap = async () => {
+    if (!nfts) return;
     setIsSwapping(true); // Set loading state
 
     const additionalWalletsNeeded = 6 - selectedWallets.length;
@@ -60,6 +72,10 @@ export default function Tasks({ nfts: initialNfts }: { nfts: NFT[] }) {
 
     setIsSwapping(false); // Reset loading state
   };
+
+  if (loading || !nfts) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <>

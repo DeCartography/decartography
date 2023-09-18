@@ -9,8 +9,6 @@ import AccountView from "./account";
 import WalletsView from "./wallets";
 import TaskView from "./tasks";
 
-import { getNFTs } from "@/lib/actions";
-
 export const metadata: Metadata = {
   title: "Dashboard",
   description: "Decartography | Dashboard",
@@ -103,16 +101,12 @@ async function getTransactions(): Promise<TransactionData> {
 export default async function DashboardPage() {
   const { transactions, balance, ethToUSD, wallet, gitcoinPassportScore } =
     await getTransactions();
-
-  const nfts = await getNFTs();
-
   return (
     <>
       <Tabs defaultValue="account" className="space-y-4">
         <TabsList>
           <TabsTrigger value="account">My Account</TabsTrigger>
           <TabsTrigger value="wallets">Wallets</TabsTrigger>
-          <TabsTrigger value="task">Task</TabsTrigger>
         </TabsList>
         <TabsContent value="account">
           <AccountView wallet={wallet} passportScore={gitcoinPassportScore} />
@@ -123,9 +117,6 @@ export default async function DashboardPage() {
             transactions={transactions as Transaction[]}
             ethToUSD={ethToUSD}
           />
-        </TabsContent>
-        <TabsContent value="task">
-          <TaskView nfts={nfts as any} />
         </TabsContent>
       </Tabs>
     </>

@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 
 import ProfilePicture from "@/components/ProfilePicture";
+import SheetView from "./sheet-view";
 
 export default function Account({
   wallet,
@@ -105,12 +105,7 @@ export default function Account({
             <CardTitle className="text-2xl">Overview</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-col gap-4">
-              By starting a task as crowd-sourcing, you can earn ~10$ ETH.
-              <div className="flex w-fit flex-col gap-2">
-                <Button>Start Now</Button>
-              </div>
-            </div>
+            <SheetView />
           </CardContent>
         </Card>
       </div>
