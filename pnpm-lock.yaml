@@ -59,9 +59,6 @@ dependencies:
   ethers:
     specifier: 5.7.2
     version: 5.7.2(utf-8-validate@6.0.3)
-  flat-carousel:
-    specifier: ^0.0.1
-    version: 0.0.1
   jwt-decode:
     specifier: ^3.1.2
     version: 3.1.2
@@ -2410,12 +2407,6 @@ packages:
       rimraf: 3.0.2
     dev: false
 
-  /flat-carousel@0.0.1:
-    resolution: {integrity: sha512-oOHCNCjnw4Tx7KFNSH1rUaqJtvrCf5Ku7dBRfA3jIFySMgEervNlh941SqVI67nf7tNqNRMmJNU6WzibCx/K+w==}
-    dependencies:
-      react: 16.14.0
-    dev: false
-
   /flatted@3.2.7:
     resolution: {integrity: sha512-5nqDSxl8nn5BSNxyR3n4I6eDmbolI6WT+QqR547RwxQapgjQBmtktdP+HTBb/a/zLsbzERTONyUB5pefh5TtjQ==}
     dev: false
@@ -3536,15 +3527,6 @@ packages:
       invariant: 2.2.4
       react: 18.2.0
       tslib: 2.6.1
-    dev: false
-
-  /react@16.14.0:
-    resolution: {integrity: sha512-0X2CImDkJGApiAlcf0ODKIneSwBPhqJawOa5wCtKbu7ZECrmS26NvtSILynQ66cgkT/RJ4LidJOc3bUESwmU8g==}
-    engines: {node: '>=0.10.0'}
-    dependencies:
-      loose-envify: 1.4.0
-      object-assign: 4.1.1
-      prop-types: 15.8.1
     dev: false
 
   /react@18.2.0:

@@ -2,12 +2,14 @@ import { Metadata } from "next";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { formatTransactions, convertDictionaryToArray } from "@/lib/helpers";
+import { formatTransactions } from "@/lib/helpers";
 import { Transaction } from "@/components/ActivityTable/Columns";
 import { cookies } from "next/headers";
 import AccountView from "./account";
 import WalletsView from "./wallets";
 import TaskView from "./tasks";
+
+import { getNFTs } from "@/lib/actions";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -20,32 +22,6 @@ interface TransactionData {
   ethToUSD: any;
   wallet: any;
   gitcoinPassportScore: any;
-}
-
-async function getNFTs(amount: number = 6) {
-  const _auth = await (await cookies().get("_auth"))?.value;
-  const wallet = await (await cookies().get("address"))?.value;
-
-  if (!wallet) return [];
-
-  try {
-    const res = await fetch(
-      `${process.env.BACKEND_URL}/api/get-addresses?amount=${amount}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${_auth}`,
-        },
-      },
-    );
-
-    const addresses = await convertDictionaryToArray(await res.json());
-    console.log(addresses);
-    return addresses;
-  } catch (error) {
-    console.error(error);
-  }
 }
 
 async function getTransactions(): Promise<TransactionData> {
