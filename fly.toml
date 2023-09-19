@@ -7,6 +7,7 @@ app = "decartography-dashboard"
 primary_region = "ewr"
 
 [build]
+  args = [{NEXT_PUBLIC_BACKEND_URL = "https://decartography.fly.dev"}, {BACKEND_URL = "https://decartography.fly.dev"}]
 
 [env]
   NEXT_PUBLIC_BACKEND_URL = "https://decartography.fly.dev"
