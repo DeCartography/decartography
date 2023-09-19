@@ -7,7 +7,6 @@ import { Transaction } from "@/components/ActivityTable/Columns";
 import { cookies } from "next/headers";
 import AccountView from "./account";
 import WalletsView from "./wallets";
-import TaskView from "./tasks";
 
 export const metadata: Metadata = {
   title: "Dashboard",
