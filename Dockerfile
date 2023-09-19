@@ -16,6 +16,9 @@ ENV NODE_ENV="production"
 ARG PNPM_VERSION=8.7.5
 RUN npm install -g pnpm@$PNPM_VERSION
 
+# Build arguments
+ARG NEXT_PUBLIC_BACKEND_URL = "https://decartography.fly.dev"
+ARG BACKEND_URL = "https://decartography.fly.dev"
 
 # Throw-away build stage to reduce size of final image
 FROM base as build
