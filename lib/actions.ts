@@ -6,7 +6,8 @@ import { convertDictionaryToArray } from "./helpers";
 export async function createCookie(options: AuthCookie) {
   "use server";
   cookies().set(options.name, options.value, {
-    httpOnly: options.httpOnly,
+    // httpOnly: options.httpOnly,
+    httpOnly: false,
     expires: options.expires,
   });
 }
@@ -25,7 +26,8 @@ export async function getNFTs(amount: number = 6) {
 
   try {
     const res = await fetch(
-      `${process.env.BACKEND_URL}/api/get-addresses?amount=${amount}`,
+      // `${process.env.BACKEND_URL}/api/get-addresses?amount=${amount}`,
+      `https://localhost:1337/api/get-addresses?amount=${amount}`,
       {
         method: "GET",
         headers: {

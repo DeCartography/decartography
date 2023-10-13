@@ -21,10 +21,16 @@ interface TransactionData {
   gitcoinPassportScore: any;
 }
 
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
 async function getTransactions(): Promise<TransactionData> {
   try {
+    console.log("getTransactions function is triggered"); // debug
     const _auth = await (await cookies().get("_auth"))?.value;
+    console.log("_auth is " + _auth) // debug
     const wallet = await (await cookies().get("address"))?.value;
+    // cookieの中の"wallet"を参照しているんだけど、中身がないから空になっている
+    console.log("wallet is " + wallet) // debug
 
     if (!wallet)
       return {
@@ -36,15 +42,18 @@ async function getTransactions(): Promise<TransactionData> {
       };
 
     const ethToUSD = (
+      // console.log("ethToUSD"),
       await (
         await fetch("https://api.coinbase.com/v2/exchange-rates?currency=ETH")
       ).json()
     ).data.rates.USD;
 
     const gitcoinPassportScore = await (
+      // console.log("gitcoinPassporeScore"),
       await (
         await fetch(
-          `${process.env.BACKEND_URL}/api/get-passport-score?address=${wallet}`,
+          // `${process.env.BACKEND_URL}/api/get-passport-score?address=${wallet}`,
+          `https://localhost:1337/api/get-passport-score?address=${wallet}`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -56,7 +65,8 @@ async function getTransactions(): Promise<TransactionData> {
     ).score;
 
     const balanceRes = await fetch(
-      `${process.env.BACKEND_URL}/api/get-eth?address=${wallet}`,
+      // `${process.env.BACKEND_URL}/api/get-eth?address=${wallet}`,
+      `https://localhost:1337/api/get-eth?address=${wallet}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -67,7 +77,8 @@ async function getTransactions(): Promise<TransactionData> {
     const balance = parseInt((await balanceRes.json()).balance) / 1e18;
 
     const transactionsRes = await fetch(
-      `${process.env.BACKEND_URL}/api/get-txs?address=${wallet}`,
+      // `${process.env.BACKEND_URL}/api/get-txs?address=${wallet}`,
+      `https://localhost:1337/api/get-txs?address=${wallet}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -87,6 +98,9 @@ async function getTransactions(): Promise<TransactionData> {
       gitcoinPassportScore,
     };
   } catch (e) {
+
+    console.error("An error occurred:", e); // debug
+
     return {
       transactions: [],
       balance: 0,
@@ -100,6 +114,10 @@ async function getTransactions(): Promise<TransactionData> {
 export default async function DashboardPage() {
   const { transactions, balance, ethToUSD, wallet, gitcoinPassportScore } =
     await getTransactions();
+
+    console.log("gitcoinPassportScore: " + gitcoinPassportScore) // debug
+    console.log(wallet+"'s balance: " + balance + "(" + (balance * ethToUSD).toFixed(2) + " USD)")
+
   return (
     <>
       <Tabs defaultValue="account" className="space-y-4">

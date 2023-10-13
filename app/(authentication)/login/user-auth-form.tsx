@@ -45,6 +45,102 @@ const Icons = {
   ),
 };
 
+// export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
+//   const [isLoading, setIsLoading] = React.useState<boolean>(false);
+//   const { toast } = useToast();
+//   const router = useRouter();
+
+//   async function onSubmit(event: React.SyntheticEvent) {
+//     event.preventDefault();
+//     console.log("onSubmit function is triggered");  // ここに追加
+
+//     setIsLoading(true);
+
+//     try {
+//       const token = await handleLogin();
+//       if (token instanceof Error) {
+//         // Handle the error case
+//         console.log(token);
+//         toast({
+//           variant: "destructive",
+//           title: "Uh oh! Something went wrong.",
+//           description:
+//             "Please ensure you have a score above 15 on Gitcoin Passport.",
+//           action: <ToastAction altText="Try again">Try again</ToastAction>,
+//         });
+//       } else {
+//         // Handle the success case with the token
+//         console.log("Successfully logged in with token:", token);
+//         const decoded: JWTContent = jwtDecode(token);
+
+//         // await createCookie({
+//         //   name: "_auth",
+//         //   value: token,
+//         //   httpOnly: true,
+//         //   expires: (decoded?.exp || 0) * 1000,
+//         // });
+
+//         // サーバーにトークンを送信して_auth Cookieを設定
+//         const response = await fetch("https://localhost:1337/api/set-auth-cookie", {
+//           method: "POST",
+//           headers: {
+//             "Content-Type": "application/json",
+//           },
+//           credentials: 'include',  // Include credentials such as cookies, authorization headers or TLS client certificates.
+//           body: JSON.stringify({ token }),
+//         });
+
+//         await createCookie({
+//           name: "address",
+//           value: decoded?.address,
+//           httpOnly: true,
+//           expires: (decoded?.exp || 0) * 1000,
+//         });
+
+//         console.log("Current cookies:", document.cookie); // cookieの確認
+
+//         toast({
+//           title: "Yay! You're logged in.",
+//           description: "Redirecting...",
+//         });
+//         return router.push("/");
+//       }
+//     } catch (err) {
+//       console.error("An error occurred during login:", err);
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   }
+
+//   return (
+//     <div className={cn("grid gap-4", className)} {...props}>
+//       <div className="relative">
+//         <div className="absolute inset-0 flex items-center">
+//           <span className="w-full border-t" />
+//         </div>
+//         {/* <div className="relative flex justify-center text-xs uppercase">
+//           <span className="bg-background px-2 text-muted-foreground">
+//             Or continue with
+//           </span>
+//         </div> */}
+//       </div>
+//       <Button
+//         variant="default"
+//         type="button"
+//         disabled={isLoading}
+//         onClick={onSubmit}
+//       >
+//         {isLoading ? (
+//           <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+//         ) : (
+//           <Icons.gitHub className="mr-2 h-4 w-4" />
+//         )}{" "}
+//         Login with Gitcoin Passport
+//       </Button>
+//     </div>
+//   );
+// }
+
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const { toast } = useToast();
@@ -52,41 +148,84 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
 
   async function onSubmit(event: React.SyntheticEvent) {
     event.preventDefault();
+    console.log("onSubmit function is triggered"); // リダイレクト前に発火している
+
     setIsLoading(true);
 
     try {
       const token = await handleLogin();
       if (token instanceof Error) {
-        // Handle the error case
-        console.log(token);
         toast({
           variant: "destructive",
           title: "Uh oh! Something went wrong.",
-          description:
-            "Please ensure you have a score above 15 on Gitcoin Passport.",
+          description: "Please ensure you have a score above 15 on Gitcoin Passport.",
           action: <ToastAction altText="Try again">Try again</ToastAction>,
         });
       } else {
-        // Handle the success case with the token
-        console.log("Successfully logged in with token:", token);
-        const decoded: JWTContent = jwtDecode(token);
-        await createCookie({
-          name: "_auth",
-          value: token,
-          httpOnly: true,
-          expires: (decoded?.exp || 0) * 1000,
-        });
+        console.log("Successfully logged in with token:", token); //これは発火してるっぽい
+
+        // 追加
+        const decoded: JWTContent = jwtDecode(token); // トークンのデコード
+
+        console.log("createCookie"); // debug
+        // await createCookie({
+        //   name: "_auth",
+        //   value: token,
+        //   httpOnly: true,
+        //   expires: (decoded?.exp || 0) * 1000,
+        // });
         await createCookie({
           name: "address",
           value: decoded?.address,
           httpOnly: true,
           expires: (decoded?.exp || 0) * 1000,
         });
-        toast({
-          title: "Yay! You're logged in.",
-          description: "Redirecting...",
+
+
+        // // サーバーにトークンを送信して_auth Cookieを設定
+        // const response = await fetch("https://localhost:1337/api/set-auth-cookie", {
+        //   method: "POST",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        //   credentials: 'include',  // Include credentials such as cookies, authorization headers or TLS client certificates.
+        //   body: JSON.stringify({ token }),
+        // });
+
+        const response = await fetch("https://localhost:1337/api/set-auth-cookie", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: 'include',
+          body: JSON.stringify({ token, address: decoded?.address }), // addressも送信
         });
-        return router.push("/");
+
+
+        if (response.ok) {
+          // const decoded: JWTContent = jwtDecode(token);
+
+          // // addressもCookieに保存
+          // await createCookie({
+          //   name: "address",
+          //   value: decoded?.address,
+          //   httpOnly: false, // もしくは true、必要に応じて
+          //   expires: (decoded?.exp || 0) * 1000,
+          // });
+          // console.log("createCookie triggered") //これがそもそも動いてないっぽい
+
+
+
+          // ローカルでcookieを設定（この部分はオプション）
+          console.log("Current cookies:", document.cookie);
+
+          toast({
+            title: "Yay! You're logged in.",
+            description: "Redirecting...",
+          });
+
+          return router.push("/");
+        }
       }
     } catch (err) {
       console.error("An error occurred during login:", err);
@@ -101,11 +240,6 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         <div className="absolute inset-0 flex items-center">
           <span className="w-full border-t" />
         </div>
-        {/* <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
-            Or continue with
-          </span>
-        </div> */}
       </div>
       <Button
         variant="default"
@@ -117,7 +251,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
         ) : (
           <Icons.gitHub className="mr-2 h-4 w-4" />
-        )}{" "}
+        )}
         Login with Gitcoin Passport
       </Button>
     </div>
