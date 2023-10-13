@@ -96,6 +96,7 @@ export default function Tasks() {
         <div className="flex flex-shrink-0">
           <div className="ml-auto mr-auto flex gap-4 self-start lg:flex-col">
             <Button size="lg">Submit</Button>
+              {/* ここはまだ何も書いてないっぽい */}
             <Button
               variant={"outline"}
               size="lg"

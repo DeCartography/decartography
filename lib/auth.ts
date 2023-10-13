@@ -3,7 +3,8 @@ import { ethers } from "ethers";
 export const handleLogin = async (): Promise<string | Error> => {
   console.log(process.env.BACKEND_URL);
   const baseUrl =
-    process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:1337"; // Fallback to empty string if not defined
+    // process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:1337"; // Fallback to empty string if not defined
+    process.env.NEXT_PUBLIC_BACKEND_URL || "https://localhost:1337"; // Fallback to empty string if not defined
   try {
     const connect = async (): Promise<string | null> => {
       try {
@@ -30,8 +31,11 @@ export const handleLogin = async (): Promise<string | Error> => {
     }
 
     // Fetch the signing message for authentication
+    // const response = await fetch(
+    //   `${baseUrl}/api/signing-message?address=${account}`,
+    // );
     const response = await fetch(
-      `${baseUrl}/api/signing-message?address=${account}`,
+      `https://localhost:1337/api/signing-message?address=${account}`,
     );
     const result = await response.json();
     const signingMessage = result.signing_message;
@@ -48,7 +52,8 @@ export const handleLogin = async (): Promise<string | Error> => {
     const signature = await signer.signMessage(signingMessage);
 
     // Send authentication details to the backend for verification
-    const authResponse = await fetch(`${baseUrl}/api/submit-passport`, {
+    // const authResponse = await fetch(`${baseUrl}/api/submit-passport`, {
+      const authResponse = await fetch(`https://localhost:1337/api/submit-passport`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
