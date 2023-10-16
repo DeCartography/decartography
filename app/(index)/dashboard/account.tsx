@@ -15,7 +15,8 @@ export default function Account({
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card className="flex flex-col items-center justify-center gap-4">
           <div className="pb-2" />
-          <ProfilePicture walletAddress="0xF60fB76e6AD847882bFe390331" />
+          {/* <ProfilePicture walletAddress="0xF60fB76e6AD847882bFe390331" /> */}
+          <ProfilePicture walletAddress={wallet}/>
           <p className="truncate text-[10px] text-muted-foreground">{wallet}</p>
           <div className="pb-2" />
         </Card>
@@ -56,7 +57,7 @@ export default function Account({
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Current Task</CardTitle>
+            <CardTitle className="text-sm font-medium">Previous Task</CardTitle>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -71,7 +72,7 @@ export default function Account({
             </svg>
           </CardHeader>
           <CardContent>
-            <div className="text-xl font-bold">Start to Earn</div>
+            <div className="text-xl font-bold">None</div>
           </CardContent>
         </Card>
         <Card>

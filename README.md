@@ -33,9 +33,7 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details. -->
 
-$ nvm use 16.14
-
-$ node server.js
+$ nvm use 16.14 && node server.js
 
 it will run on https://localhost:3000
 
