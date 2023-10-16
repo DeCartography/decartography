@@ -41,15 +41,16 @@ export default function Account({
             </svg>
           </CardHeader>
           <CardContent>
+            {/* provided by Gitcoin Passport, Increase score from here */}
             <div className="text-2xl font-bold">{passportScore}</div>
             <p className="text-xs text-muted-foreground">
-              Provided by{" "}
+              Provided by Gitcoin Passport, Increase score from {" "}
               <a
                 className="font-bold hover:text-gray-400"
                 href="https://passport.gitcoin.co/#/dashboard"
                 target={"_blank"}
               >
-                Gitcoin Passport
+                here
               </a>
             </p>
           </CardContent>

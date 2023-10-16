@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatTransactions } from "@/lib/helpers";
 import { Transaction } from "@/components/ActivityTable/Columns";
 import { cookies } from "next/headers";
+
 import AccountView from "./account";
 import WalletsView from "./wallets";
 
@@ -112,6 +113,19 @@ async function getTransactions(): Promise<TransactionData> {
 }
 
 export default async function DashboardPage() {
+
+  // const router = useRouter();
+  // // const defaultTab: 'account' | 'wallets' = router.query.tab as 'account' | 'wallets' || "account";
+  // let defaultTab: string | undefined = "account";
+
+  // if (Array.isArray(router.query.tab)) {
+  //   defaultTab = router.query.tab[0];
+  // } else if (typeof router.query.tab === "string") {
+  //   defaultTab = router.query.tab;
+  // }
+
+
+
   const { transactions, balance, ethToUSD, wallet, gitcoinPassportScore } =
     await getTransactions();
 
