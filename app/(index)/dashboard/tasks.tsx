@@ -15,11 +15,11 @@ interface NFT {
 export default function Tasks() {
 
 
-  const [submittedWallets, setSubmittedWallets] = useState<string[][]>([]); // フロント用
+  const [submittedWallets, setSubmittedWallets] = useState<string[][]>([]); // フロント用、一回のタスクに中身が入る
 
-  const [allSelectedWallets, setAllSelectedWallets] = useState<string[][]>([]); // バックエンドに送信する用
+  const [allSelectedWallets, setAllSelectedWallets] = useState<string[][]>([]); // バックエンドに送信する用、セッション内で回答した全てのsubmit履歴が入る
 
-  const maxSubmitCount = 3; // 上限回数
+  const maxSubmitCount = 3; // セッションにつき何回タスクを送信させるか。この場合は3回送信すれば1セッション
 
   const [submitCount, setSubmitCount] = useState(0);
 
@@ -40,20 +40,6 @@ export default function Tasks() {
     await setNfts(initialWallets as NFT[]);
   };
 
-  // const toggleWallet = (address: string) => {
-  //   if (selectedWallets.length === 3 && !selectedWallets.includes(address)) {
-  //     return;
-  //   }
-  //   setSelectedWallets((prevSelected) => {
-  //     if (prevSelected.includes(address)) {
-  //       return prevSelected.filter((wallet) => wallet !== address);
-  //     } else {
-  //       return [...prevSelected, address];
-  //     }
-  //   });
-  // };
-
-  // ここはChatGPTと書き換えていく
   const toggleWallet = (address: string) => {
     if (selectedWallets.length >= 3 && !selectedWallets.includes(address)) {
       alert("You can only select up to 3 items. To choose another item, please deselect one.");
@@ -84,30 +70,12 @@ export default function Tasks() {
       return;
     }
 
-    // // 現在ログインしているユーザーのアドレスを取得
-    // const userAddress = getCookie("address");
-
-    // // 送信するデータを作成
-    // setAllSelectedWallets([...allSelectedWallets, selectedWallets]);
-
     //リファクタリング
     setAllSelectedWallets([...allSelectedWallets, selectedWallets]);
     setSubmittedWallets([...submittedWallets, selectedWallets]);
 
     const newSubmitCount = submitCount + 1;
     setSubmitCount(newSubmitCount);
-
-    // const newSubmitCount = submitCount + 1;
-    // setSubmitCount(newSubmitCount);
-
-
-
-    // // ページに描画する
-    // setSubmittedWallets([...submittedWallets, selectedWallets]);
-
-
-    // // Submit回数をカウントアップ
-    // setSubmitCount(prevCount => prevCount + 1);
 
     // // 選択状態を解除
     setSelectedWallets([]);
@@ -124,7 +92,6 @@ export default function Tasks() {
       const payload = {
         userAddress,
         allSelectedWallets: [...allSelectedWallets, selectedWallets]
-        // submitCount: newSubmitCount,
       };
 
       // コンソールに出力
@@ -133,7 +100,30 @@ export default function Tasks() {
       alert("You have reached the submission limit. Returning to the home screen.");
 
 
-      // ここでPOSTリクエストを実行（バックエンドが準備できたら）
+
+      /*
+      POST like this:
+      {
+          "userAddress": "0xF60fB76e6AD89364Af3ffE72C447882bFe390331",
+          "allSelectedWallets": [
+              [
+                  "0x37260938452373ff950547f30d8b06418d361f43",
+                  "0x6d83b5e198ef938d63e1160d127c8c5cd0541944",
+                  "0x765e97fb4346bcb08348ad503e1f28896d0a2f60"
+              ],
+              [
+                  "0x37260938452373ff950547f30d8b06418d361f43",
+                  "0x6d83b5e198ef938d63e1160d127c8c5cd0541944",
+                  "0x765e97fb4346bcb08348ad503e1f28896d0a2f60"
+              ],
+              [
+                  "0x37260938452373ff950547f30d8b06418d361f43",
+                  "0x6d83b5e198ef938d63e1160d127c8c5cd0541944",
+                  "0x765e97fb4346bcb08348ad503e1f28896d0a2f60"
+              ]
+          ]
+      }
+      */
       fetch('https://localhost:1337/api/insert-data', {
         method: 'POST',
         headers: {
@@ -192,15 +182,6 @@ export default function Tasks() {
     <>
       <div className="flex flex-col gap-5 lg:flex-row">
         <div className="flex-1 flex-wrap">
-
-          {/* <div className="submitted-section">
-            <h3>Previously Submitted Wallet Addresses:</h3>
-            <ul>
-              {submittedWallets.map((address, index) => (
-                <li key={index}>{address}</li>
-              ))}
-            </ul>
-          </div> */}
           <div className="submitted-section">
             <h3>Previously Submitted Wallet Addresses:</h3>
             <ul>
