@@ -179,55 +179,71 @@ export default function Tasks() {
   }
 
   return (
-    <>
-      <div className="flex flex-col gap-5 lg:flex-row">
-        <div className="flex-1 flex-wrap">
-          <div className="submitted-section">
-            <h3>Previously Submitted Wallet Addresses:</h3>
-            <ul>
-              {submittedWallets.map((addresses, index) => (
-                <li key={index}>
-                  {index + 1}[{addresses.join(", ")}]
-                </li>
-              ))}
-            </ul>
-          </div>
+    <div className="flex"> {/* 追加: 最外部のflexコンテナ */}
 
+      {/* 追加: サイドバー */}
+      <div className="w-1/5 min-h-screen p-4 border-r">
 
-          <div className="flex flex-col items-center gap-8 lg:grid lg:grid-cols-3 lg:grid-rows-3">
-            {nfts.map((nft) => (
-              <div key={nft.address} className="max-w-[300px]">
-                <WalletCard
-                  images={nft.links}
-                  selected={selectedWallets.includes(nft.address)}
-                  toggleSelected={() => toggleWallet(nft.address)}
-                />
-              </div>
-            ))}
-          </div>
+        <div>
+          <h3>Current Task Count:</h3>
+          <p>{submitCount} / {maxSubmitCount}</p>
         </div>
 
-        <div className="flex flex-shrink-0">
-          <div className="ml-auto mr-auto flex gap-4 self-start lg:flex-col">
-            <Button
-              size="lg"
-              onClick={handleSubmit}
-            >
-              Submit
-            </Button>
+        <br></br>
 
-            <Button
-              variant={"outline"}
-              size="lg"
-              onClick={handleSwap}
-              disabled={isSwapping}
-            >
-              {isSwapping ? "Swapping..." : "Swap"}
-            </Button>
-          </div>
+        <div>
+          <h3>過去に入力したアドレス:</h3>
+          <ul>
+            {submittedWallets.map((addresses, index) => (
+              <li key={index}>
+                {index + 1}[{addresses.join(", ")}]
+              </li>
+            ))}
+          </ul>
         </div>
 
       </div>
-    </>
+
+
+      <div className="flex-1 overflow-auto">
+
+        {/* タスク表示部分 */}
+        <div className="flex flex-col items-center gap-8 lg:grid lg:grid-cols-3 lg:grid-rows-3">
+          {nfts.map((nft) => (
+            <div key={nft.address} className="max-w-[300px]">
+              <WalletCard
+                images={nft.links}
+                selected={selectedWallets.includes(nft.address)}
+                toggleSelected={() => toggleWallet(nft.address)}
+              />
+            </div>
+          ))}
+        </div>
+
+
+      </div>
+      {/* ボタン部分 */}
+      <div className="flex flex-shrink-0">
+        <div className="ml-auto mr-auto flex gap-4 self-start lg:flex-col">
+          <Button
+            size="lg"
+            onClick={handleSubmit}
+          >
+            Submit
+          </Button>
+
+          <Button
+            variant={"outline"}
+            size="lg"
+            onClick={handleSwap}
+            disabled={isSwapping}
+          >
+            {isSwapping ? "Swapping..." : "Swap"}
+          </Button>
+        </div>
+      </div>
+
+    </div>
   );
+
 }
