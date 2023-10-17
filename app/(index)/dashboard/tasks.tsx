@@ -14,8 +14,13 @@ interface NFT {
 
 export default function Tasks() {
 
-  //added
-  const [submittedWallets, setSubmittedWallets] = useState<string[]>([]);
+
+  const [submittedWallets, setSubmittedWallets] = useState<string[][]>([]); // フロント用
+
+  const [allSelectedWallets, setAllSelectedWallets] = useState<string[][]>([]); // バックエンドに送信する用
+
+  const maxSubmitCount = 3; // 上限回数
+
   const [submitCount, setSubmitCount] = useState(0);
 
   const [nfts, setNfts] = useState<NFT[] | null>(null);
@@ -72,36 +77,73 @@ export default function Tasks() {
 
 
   const handleSubmit = async () => {
+
+    // 選択されたアドレスが3つ以上あるかチェック
     if (selectedWallets.length < 3) {
       alert("Please select 3 items.");
       return;
     }
 
-    // 現在ログインしているユーザーのアドレスを取得
-    const userAddress = getCookie("address");
+    // // 現在ログインしているユーザーのアドレスを取得
+    // const userAddress = getCookie("address");
 
-    // 選択されたウォレットアドレスとユーザーアドレスをconsole.logで出力
-    console.log("User Address:", userAddress);
-    console.log("Selected Wallet Addresses:", selectedWallets);
+    // // 送信するデータを作成
+    // setAllSelectedWallets([...allSelectedWallets, selectedWallets]);
 
-    // ページに描画する
-    setSubmittedWallets([...submittedWallets, ...selectedWallets]);
+    //リファクタリング
+    setAllSelectedWallets([...allSelectedWallets, selectedWallets]);
+    setSubmittedWallets([...submittedWallets, selectedWallets]);
 
-    // Submit回数をカウントアップ
-    setSubmitCount(prevCount => prevCount + 1);
+    const newSubmitCount = submitCount + 1;
+    setSubmitCount(newSubmitCount);
 
-    // 選択状態を解除
+    // const newSubmitCount = submitCount + 1;
+    // setSubmitCount(newSubmitCount);
+
+
+
+    // // ページに描画する
+    // setSubmittedWallets([...submittedWallets, selectedWallets]);
+
+
+    // // Submit回数をカウントアップ
+    // setSubmitCount(prevCount => prevCount + 1);
+
+    // // 選択状態を解除
     setSelectedWallets([]);
 
     // 新しいアドレスを取得（swapと同じ処理）
     handleSwap();
 
-    // タスク上限に達した場合
-    if (submitCount >= 2) {
+    // タスクの上限に達したかどうかをチェック
+    if (newSubmitCount >= maxSubmitCount) {
+      // 現在ログインしているユーザーのアドレスを取得
+      const userAddress = getCookie("address");
+
+      // 送信するデータを作成
+      const payload = {
+        userAddress,
+        allSelectedWallets: [...allSelectedWallets, selectedWallets]
+        // submitCount: newSubmitCount,
+      };
+
+      // コンソールに出力
+      console.log("Sending the following data to /api/insert-data:", payload);
+
       alert("You have reached the submission limit. Returning to the home screen.");
+
+
+      // ここでPOSTリクエストを実行（バックエンドが準備できたら）
+      fetch('https://localhost:1337/api/insert-data', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
       // ホーム画面へリダイレクト（具体的な方法はプロジェクトに依存）
       window.location.href = "/dashboard?tab=wallets";
-
     }
 
   };
@@ -151,11 +193,21 @@ export default function Tasks() {
       <div className="flex flex-col gap-5 lg:flex-row">
         <div className="flex-1 flex-wrap">
 
-          <div className="submitted-section">
+          {/* <div className="submitted-section">
             <h3>Previously Submitted Wallet Addresses:</h3>
             <ul>
               {submittedWallets.map((address, index) => (
                 <li key={index}>{address}</li>
+              ))}
+            </ul>
+          </div> */}
+          <div className="submitted-section">
+            <h3>Previously Submitted Wallet Addresses:</h3>
+            <ul>
+              {submittedWallets.map((addresses, index) => (
+                <li key={index}>
+                  {index + 1}[{addresses.join(", ")}]
+                </li>
               ))}
             </ul>
           </div>

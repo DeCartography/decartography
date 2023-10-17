@@ -30,8 +30,9 @@ export default function SheetView() {
         <SheetHeader>
           <SheetTitle>Task View</SheetTitle>
           <SheetDescription>
-            View and complete tasks, don't close the window until you're done as
-            it will reset your progress.
+            {/* View and complete tasks, don't close the window until you're done as
+            it will reset your progress. */}
+            表示された選択肢の中から、あなたが直感的に「似ている」と思うもの3つを選択してSubmitしてください
           </SheetDescription>
         </SheetHeader>
         <div className="w-[80%] py-4">

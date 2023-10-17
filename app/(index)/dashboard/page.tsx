@@ -30,7 +30,6 @@ async function getTransactions(): Promise<TransactionData> {
     const _auth = await (await cookies().get("_auth"))?.value;
     console.log("_auth is " + _auth) // debug
     const wallet = await (await cookies().get("address"))?.value;
-    // cookieの中の"wallet"を参照しているんだけど、中身がないから空になっている
     console.log("wallet is " + wallet) // debug
 
     if (!wallet)
@@ -114,17 +113,8 @@ async function getTransactions(): Promise<TransactionData> {
 
 export default async function DashboardPage() {
 
-  // const router = useRouter();
-  // // const defaultTab: 'account' | 'wallets' = router.query.tab as 'account' | 'wallets' || "account";
-  // let defaultTab: string | undefined = "account";
 
-  // if (Array.isArray(router.query.tab)) {
-  //   defaultTab = router.query.tab[0];
-  // } else if (typeof router.query.tab === "string") {
-  //   defaultTab = router.query.tab;
-  // }
-
-
+  //todo: redirect to dashboard?tab=wallets as directly
 
   const { transactions, balance, ethToUSD, wallet, gitcoinPassportScore } =
     await getTransactions();
