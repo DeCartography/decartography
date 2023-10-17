@@ -1,7 +1,10 @@
+"use client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import ProfilePicture from "@/components/ProfilePicture";
 import SheetView from "./sheet-view";
+
+import { useState, useEffect } from "react";
 
 export default function Account({
   wallet,
@@ -10,13 +13,35 @@ export default function Account({
   wallet: string;
   passportScore: number;
 }) {
+
+  const [currentTime, setCurrentTime] = useState("");
+  const [nextTaskDate, setNextTaskDate] = useState("");
+
+  useEffect(() => {
+    const updateDateTime = () => {
+      const now = new Date();
+      const nextTaskTime = new Date(now.getTime() + 24 * 60 * 60 * 1000); // +1 day in milliseconds
+
+      const currentTimeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+      const nextTaskDateStr = `${nextTaskTime.getMonth() + 1}/${nextTaskTime.getDate()}/${nextTaskTime.getFullYear()}`;
+
+      setCurrentTime(currentTimeStr);
+      setNextTaskDate(nextTaskDateStr);
+    };
+
+    updateDateTime();
+    const timerID = setInterval(updateDateTime, 60000); // Update every 1 minute
+
+    return () => clearInterval(timerID);
+  }, []);
+
   return (
     <div className="space-y-4">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card className="flex flex-col items-center justify-center gap-4">
           <div className="pb-2" />
           {/* <ProfilePicture walletAddress="0xF60fB76e6AD847882bFe390331" /> */}
-          <ProfilePicture walletAddress={wallet}/>
+          <ProfilePicture walletAddress={wallet} />
           <p className="truncate text-[10px] text-muted-foreground">{wallet}</p>
           <div className="pb-2" />
         </Card>
@@ -79,7 +104,7 @@ export default function Account({
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Next Claimable Reward
+              Next Task Available At
             </CardTitle>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -96,8 +121,8 @@ export default function Account({
             </svg>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">10:30 PM</div>
-            <p className="text-xs text-muted-foreground">Tomorrow (5/3/2023)</p>
+            <div className="text-2xl font-bold">{currentTime}</div>
+            <p className="text-xs text-muted-foreground">Tomorrow ({nextTaskDate})</p>
           </CardContent>
         </Card>
       </div>
