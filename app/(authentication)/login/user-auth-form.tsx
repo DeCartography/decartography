@@ -158,7 +158,14 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         toast({
           variant: "destructive",
           title: "Uh oh! Something went wrong.",
-          description: "Please ensure you have a score above 15 on Gitcoin Passport.",
+          description: (
+            <span>
+              Please ensure you have a score above 15 on Gitcoin Passport. Initialize or Update your score on{" "}
+              <a href="https://passport.gitcoin.co" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>
+                passport.gitcoin.co
+              </a>
+            </span>
+          ),
           action: <ToastAction altText="Try again">Try again</ToastAction>,
         });
       } else {

@@ -9,6 +9,8 @@ const handle = app.getRequestHandler();
 
 // SSL証明書と鍵を読み込む
 const httpsOptions = {
+  // key: fs.readFileSync('./local.key'),
+  // cert: fs.readFileSync('./local.crt')
   key: fs.readFileSync('./key.pem'),
   cert: fs.readFileSync('./cert.pem')
 };
