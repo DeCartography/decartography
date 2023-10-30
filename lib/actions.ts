@@ -17,16 +17,73 @@ export async function deleteCookie(name: string) {
   cookies().delete(name);
 }
 
-export async function getNFTs(amount: number = 6) {
+interface GetNFTsResponse {
+  addresses: {
+    address: string;
+    links: string[];
+  }[];
+  isInitialTask: number | null;
+}
+
+
+// export async function getNFTs(amount: number = 6) {
+//   "use server";
+//   const _auth = await (await cookies().get("_auth"))?.value;
+//   const wallet = await (await cookies().get("address"))?.value;
+
+//   // if (!wallet) return [];
+//   if (!wallet) return { addresses: [], isInitialTask: null };
+
+
+//   try {
+//     const res = await fetch(
+//       // `${process.env.BACKEND_URL}/api/get-addresses?amount=${amount}`,
+//       `https://localhost:1337/api/get-addresses?amount=${amount}`,
+//       // `https://localhost:1337/api/get-old-addresses?amount=${amount}`,
+//       {
+//         method: "GET",
+//         headers: {
+//           "Content-Type": "application/json",
+//           Authorization: `Bearer ${_auth}`,
+//         },
+//       },
+//     );
+
+//     // const addresses = await convertDictionaryToArray(await res.json());
+//     //   // res.jsonの中身は以下のようなものになる
+//     //   // {
+//     //   //   "0xAddress1": ["NFT_Image_URL_1", "NFT_Image_URL_2", ...],
+//     //   //   "0xAddress2": ["NFT_Image_URL_1", "NFT_Image_URL_2", ...],
+//     //   //   ...
+//     //   // }
+//     // const isInitialTask = jsonResponse.is_initial_task
+
+//     const jsonResponse = await res.json();
+//     console.log(jsonResponse)
+
+//     const addresses = await convertDictionaryToArray(jsonResponse);
+//     const isInitialTask = jsonResponse.is_initial_task;  // 追加
+
+//     return { addresses, isInitialTask };  // 追加
+
+
+//     // return addresses;
+//   } catch (error) {
+//     console.error(error);
+//     return { addresses: [], isInitialTask: null };
+//   }
+// }
+
+
+export async function getNFTs(amount: number = 6): Promise<GetNFTsResponse> {
   "use server";
   const _auth = await (await cookies().get("_auth"))?.value;
   const wallet = await (await cookies().get("address"))?.value;
 
-  if (!wallet) return [];
+  if (!wallet) return { addresses: [], isInitialTask: null };
 
   try {
     const res = await fetch(
-      // `${process.env.BACKEND_URL}/api/get-addresses?amount=${amount}`,
       `https://localhost:1337/api/get-addresses?amount=${amount}`,
       {
         method: "GET",
@@ -37,9 +94,13 @@ export async function getNFTs(amount: number = 6) {
       },
     );
 
-    const addresses = await convertDictionaryToArray(await res.json());
-    return addresses;
+    const jsonResponse = await res.json();
+    const addresses = await convertDictionaryToArray(jsonResponse);
+    const isInitialTask = jsonResponse.is_initial_task;
+
+    return { addresses, isInitialTask };
   } catch (error) {
     console.error(error);
+    return { addresses: [], isInitialTask: null };
   }
 }

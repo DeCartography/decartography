@@ -31,14 +31,26 @@ export async function formatTransactions(
   return formattedTransactions;
 }
 
-export async function convertDictionaryToArray(dictionary: any) {
-  const resultArray = [];
+// export async function convertDictionaryToArray(dictionary: any) {
+//   const resultArray = [];
 
-  for (const key in dictionary) {
-    const value = dictionary[key];
-    const obj = { address: key, links: value };
-    resultArray.push(obj);
+//   for (const key in dictionary) {
+//     const value = dictionary[key];
+//     const obj = { address: key, links: value };
+//     resultArray.push(obj);
+//   }
+
+//   return resultArray;
+// }
+
+
+export async function convertDictionaryToArray(jsonResponse: any): Promise<{ address: string; links: string[] }[]> {
+  const rawAddresses = jsonResponse.address_to_raw_uris;
+  const addresses: { address: string; links: string[] }[] = [];
+
+  for (const [address, links] of Object.entries(rawAddresses)) {
+    addresses.push({ address, links: links as string[] });
   }
 
-  return resultArray;
+  return addresses;
 }

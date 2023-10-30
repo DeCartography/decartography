@@ -5,6 +5,7 @@ import WalletCard from "@/components/WalletCard";
 import { getNFTs } from "@/lib/actions";
 
 
+
 interface NFT {
   address: string;
   links: string[];
@@ -24,21 +25,35 @@ export default function Tasks() {
   const [submitCount, setSubmitCount] = useState(0);
 
   const [nfts, setNfts] = useState<NFT[] | null>(null);
+  console.log("nfts", nfts); //debug
+
+
   const [selectedWallets, setSelectedWallets] = useState<string[]>([]);
   const [isSwapping, setIsSwapping] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  // バックエンドで生成しているタスクがinitial_taskなのか、subsequent_tasksなのかを判断するための関数を追加。
+  const [isInitialTask, setIsInitialTask] = useState<boolean | null>(null);
+
 
 
   useEffect(() => {
-    fetchInitialWallets();
+    const fetchData = async () => {
+      const { addresses, isInitialTask } = await getNFTs(6);
+      setNfts(addresses as unknown as NFT[]);
+      setIsInitialTask(Boolean(isInitialTask));
+
+    };
+    fetchData();
     setLoading(false);
   }, []);
 
-  const fetchInitialWallets = async () => {
-    const initialWallets = await getNFTs(6);
-    await setNfts(initialWallets as NFT[]);
-  };
+
+  // const fetchInitialWallets = async () => {
+  //   const initialWallets = await getNFTs(6);
+  //   setNfts(initialWallets as unknown as NFT[]);
+  //   // await setNfts(initialWallets as NFT[]);
+  // };
 
   const toggleWallet = (address: string) => {
     if (selectedWallets.length >= 3 && !selectedWallets.includes(address)) {
@@ -53,6 +68,14 @@ export default function Tasks() {
       }
     });
   };
+
+  // // 新たに追加: is_initial_task の情報を取得する関数
+  // const fetchIsInitialTask = async () => {
+  //   const response = await fetch("/api/get-is-initial-task"); // エンドポイントは適当です
+  //   const data = await response.json();
+  //   setIsInitialTask(data.isInitialTask);
+  // };
+
 
   // import { cookies } from "next/headers";ができないので自作しちゃう
   const getCookie = (name: string) => {
@@ -70,28 +93,37 @@ export default function Tasks() {
       return;
     }
 
-    //リファクタリング
-    setAllSelectedWallets([...allSelectedWallets, selectedWallets]);
-    setSubmittedWallets([...submittedWallets, selectedWallets]);
+    // //リファクタリング
+    // setAllSelectedWallets([...allSelectedWallets, selectedWallets]);
+    // setSubmittedWallets([...submittedWallets, selectedWallets]);
+
+    // リファクタリング: allSelectedWallets と submittedWallets を一度に更新
+    const newAllSelectedWallets = [...allSelectedWallets, selectedWallets];
+    const newSubmittedWallets = [...submittedWallets, selectedWallets];
+
+    setAllSelectedWallets(newAllSelectedWallets);
+    setSubmittedWallets(newSubmittedWallets);
+
+
 
     const newSubmitCount = submitCount + 1;
     setSubmitCount(newSubmitCount);
 
-    // // 選択状態を解除
-    setSelectedWallets([]);
-
     // 新しいアドレスを取得（swapと同じ処理）
     handleSwap();
 
+    console.log("selectedWallets" + selectedWallets);
+
+    // // 選択状態を解除
+    setSelectedWallets([]);
+
     // タスクの上限に達したかどうかをチェック
     if (newSubmitCount >= maxSubmitCount) {
-      // 現在ログインしているユーザーのアドレスを取得
-      const userAddress = getCookie("address");
 
       // 送信するデータを作成
       const payload = {
-        userAddress,
-        allSelectedWallets: [...allSelectedWallets, selectedWallets]
+        userAddress: getCookie("address"),
+        allSelectedWallets: newAllSelectedWallets // 更新後の allSelectedWallets を使用
       };
 
       // コンソールに出力
@@ -139,6 +171,41 @@ export default function Tasks() {
   };
 
 
+  // const handleSwap = async () => {
+  //   if (!nfts) return;
+  //   setIsSwapping(true); // Set loading state
+
+  //   const additionalWalletsNeeded = 6 - selectedWallets.length;
+
+  //   if (additionalWalletsNeeded > 0) {
+  //     // Fetch additional wallets from your API
+  //     const newWallets = await getNFTs(additionalWalletsNeeded);
+
+  //     // Check if newWallets is undefined
+  //     if (!newWallets) return console.error("Error while fetching new wallets");
+
+  //     // Replace unselected wallets with the new ones
+  //     const updatedNfts = nfts.map((nft) => {
+  //       if (!selectedWallets.includes(nft.address)) {
+  //         const newWallet = newWallets.pop();
+  //         if (newWallet) {
+  //           return { address: newWallet.address, links: newWallet.links };
+  //         }
+  //       }
+  //       return nft;
+  //     });
+
+  //     // Update the state with the new nfts and selectedWallets
+  //     setNfts(updatedNfts);
+  //     setSelectedWallets((prevSelected) => [
+  //       ...prevSelected,
+  //       ...newWallets.map((wallet: any) => wallet.address),
+  //     ]);
+  //   }
+
+  //   setIsSwapping(false); // Reset loading state
+  // };
+
   const handleSwap = async () => {
     if (!nfts) return;
     setIsSwapping(true); // Set loading state
@@ -147,7 +214,7 @@ export default function Tasks() {
 
     if (additionalWalletsNeeded > 0) {
       // Fetch additional wallets from your API
-      const newWallets = await getNFTs(additionalWalletsNeeded);
+      const { addresses: newWallets } = await getNFTs(additionalWalletsNeeded); // ここを修正
 
       // Check if newWallets is undefined
       if (!newWallets) return console.error("Error while fetching new wallets");
@@ -155,7 +222,7 @@ export default function Tasks() {
       // Replace unselected wallets with the new ones
       const updatedNfts = nfts.map((nft) => {
         if (!selectedWallets.includes(nft.address)) {
-          const newWallet = newWallets.pop();
+          const newWallet = newWallets.pop(); // ここも修正
           if (newWallet) {
             return { address: newWallet.address, links: newWallet.links };
           }
@@ -167,12 +234,13 @@ export default function Tasks() {
       setNfts(updatedNfts);
       setSelectedWallets((prevSelected) => [
         ...prevSelected,
-        ...newWallets.map((wallet: any) => wallet.address),
+        ...newWallets.map((wallet: any) => wallet.address), // そしてここ
       ]);
     }
 
     setIsSwapping(false); // Reset loading state
   };
+
 
   if (loading || !nfts) {
     return <div>Loading...</div>;
@@ -183,6 +251,12 @@ export default function Tasks() {
 
       {/* 追加: サイドバー */}
       <div className="w-1/5 min-h-screen p-4 border-r">
+
+        <div>
+          {/* 新たに追加: is_initial_task の情報を表示 */}
+          <h3>Is this an Initial Task?:</h3>
+          <p>{isInitialTask !== null ? (isInitialTask ? "Yes" : "No") : "Loading..."}</p>
+        </div>
 
         <div>
           <h3>Current Task Count:</h3>

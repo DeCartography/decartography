@@ -13,15 +13,11 @@ import en from 'javascript-time-ago/locale/en';
 TimeAgo.addDefaultLocale(en);
 const timeAgo = new TimeAgo('en-US');
 
-//
 
-
+// APIを経由してDBから取得する「最後のタスク」の型
 type LatestTaskType = {
-  // timestamp: string;
-  // task_completed: boolean;
   created_at: Date;
 };
-
 
 
 export default function Account({
@@ -34,7 +30,8 @@ export default function Account({
 
   const [latestTask, setLatestTask] = useState<LatestTaskType | null>(null);
   const [currentTime, setCurrentTime] = useState("");
-  const [nextTaskDate, setNextTaskDate] = useState("");
+
+  // const [nextTaskDate, setNextTaskDate] = useState("");
 
   // const [formattedTimeAgo, setFormattedTimeAgo] = useState<string | null>(null);
 
@@ -128,14 +125,8 @@ export default function Account({
   const nextTaskDateObj = new Date();
   nextTaskDateObj.setHours(nextTaskDateObj.getHours() + 24); // 現在時間に24時間加えます
 
-  // let nextTaskAgo = '';
-  // if (lastTaskDate.getTime() + 24 * 60 * 60 * 1000 <= nextTaskDateObj.getTime()) {
-  //   nextTaskAgo = 'right now';
-  // } else {
-  //   nextTaskAgo = timeAgo.format(nextTaskDateObj);
-  // }
 
-  const nextTaskAgo = nextTaskDateObj instanceof Date && !isNaN(nextTaskDateObj.valueOf()) ? timeAgo.format(nextTaskDateObj) : 'Unknown';
+  // const nextTaskAgo = nextTaskDateObj instanceof Date && !isNaN(nextTaskDateObj.valueOf()) ? timeAgo.format(nextTaskDateObj) : 'Unknown';
 
 
   return (
@@ -143,7 +134,6 @@ export default function Account({
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card className="flex flex-col items-center justify-center gap-4">
           <div className="pb-2" />
-          {/* <ProfilePicture walletAddress="0xF60fB76e6AD847882bFe390331" /> */}
           <ProfilePicture walletAddress={wallet} />
           <p className="truncate text-[10px] text-muted-foreground">{wallet}</p>
           <div className="pb-2" />
@@ -202,13 +192,17 @@ export default function Account({
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {/* {latestTask ? new Date(latestTask.created_at).toLocaleString() : "None"} */}
-              {/* {formattedTimeAgo ? formattedTimeAgo : "None"} */}
               {previousTaskAgo}
-
             </div>
             <p className="text-xs text-muted-foreground">
-              {latestTask ? new Date(latestTask.created_at).toLocaleString() : "None"}
+              {latestTask ? new Date(latestTask.created_at).toLocaleString() : "None"}. You've earned: {" "}
+              <a
+                className="font-bold hover:text-gray-400"
+                href="https://etherscan.io/tx/0x137c6812dc363ed5f48a2135814dfcfbd6c214fc3d5e291479e9efbcd4ed4ad9"
+                target={"_blank"}
+              >
+                3.5 USD
+              </a>
             </p>
           </CardContent>
         </Card>
@@ -232,9 +226,10 @@ export default function Account({
             </svg>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{nextTaskAgo}</div>
+            <div className="text-2xl font-bold">Static</div>
             {/* <div className="text-2xl font-bold">{nextTaskDate}</div> */}
             {/* <p className="text-xs text-muted-foreground">{nextTaskAgo}</p> */}
+            {/* ここは、「（次のタスクを始められるまで）何時間後」 という表示にしたい*/}
           </CardContent>
         </Card>
       </div>
