@@ -31,9 +31,9 @@ export default function Account({
   const [latestTask, setLatestTask] = useState<LatestTaskType | null>(null);
   const [currentTime, setCurrentTime] = useState("");
 
-  // const [nextTaskDate, setNextTaskDate] = useState("");
+  const [nextTaskDate, setNextTaskDate] = useState("");
 
-  // const [formattedTimeAgo, setFormattedTimeAgo] = useState<string | null>(null);
+  const [formattedTimeAgo, setFormattedTimeAgo] = useState<string | null>(null);
 
   // time
 
@@ -46,7 +46,12 @@ export default function Account({
   //     const nextTaskTime = new Date(now.getTime() + 24 * 60 * 60 * 1000); // +1 day in milliseconds
 
   //     // Format the time until the next task is available
-  //     const formattedTimeUntilNextTask = timeAgo.format(nextTaskTime);
+  //     let formattedTimeUntilNextTask;
+  //     if (!latestTask || now.getTime() - new Date(latestTask.created_at).getTime() >= 24 * 60 * 60 * 1000) {
+  //       formattedTimeUntilNextTask = "Now Available";
+  //     } else {
+  //       formattedTimeUntilNextTask = timeAgo.format(nextTaskTime);
+  //     }
 
   //     // Update state or wherever you need it
   //     setNextTaskDate(formattedTimeUntilNextTask);
@@ -59,7 +64,6 @@ export default function Account({
   //     setNextTaskDate(nextTaskDateStr);
 
   //     // fetch latest task
-  //     // fetch(`/api/get-latest-task?wallet=${wallet}`)
   //     fetch(`https://localhost:1337/api/get-latest-task?wallet=${wallet}`)
   //       .then(response => response.json())
   //       // .then(data => {
@@ -74,6 +78,9 @@ export default function Account({
   //           const formattedTimeAgo = timeAgo.format(previousTask_date);
   //           // Store this formattedTimeAgo in the state or wherever you need it
   //           setFormattedTimeAgo(formattedTimeAgo);
+  //         }
+  //         else{
+  //           console.log(`${wallet}のタスクはありません`)
   //         }
   //       })
   //       .catch(error => {
@@ -90,22 +97,68 @@ export default function Account({
 
   // }, []);
 
+
+  // useEffect(() => {
+  //   const updateDateTime = () => {
+  //     const now = new Date();
+  //     const currentTimeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+  //     setCurrentTime(currentTimeStr);
+
+  //     fetch(`https://localhost:1337/api/get-latest-task?wallet=${wallet}`)
+  //       .then(response => response.json())
+  //       .then(data => {
+  //         if (data.created_at) {
+  //           setLatestTask(data);
+  //         }
+  //       })
+  //       .catch(error => {
+  //         console.error("Error fetching latest task:", error);
+  //       });
+  //   };
+
+  //   updateDateTime();
+  //   const timerID = setInterval(updateDateTime, 60000); // Update every 1 minute
+
+  //   return () => clearInterval(timerID);
+  // }, []);
+
   useEffect(() => {
-    const updateDateTime = () => {
+    const updateDateTime = async () => {
       const now = new Date();
+
+      try {
+        // まずはlatesttaskを取得する
+        const response = await fetch(`https://localhost:1337/api/get-latest-task?wallet=${wallet}`);
+        const data = await response.json();
+
+        // 過去に取り組んだデータがある場合:
+        if (data && data.created_at) {
+          setLatestTask(data);
+          const latestTaskDate = new Date(data.created_at);
+          const timeDifference = now.getTime() - latestTaskDate.getTime();
+
+          // "created_at"と現在の日時の差が24時間以内の場合
+          if (timeDifference < 24 * 60 * 60 * 1000) {
+            // 次のタスクの時間を計算
+            const nextTaskTime = new Date(latestTaskDate.getTime() + 24 * 60 * 60 * 1000);
+            const hoursUntilNextTask = (nextTaskTime.getTime() - now.getTime()) / (1000 * 60 * 60);
+            setNextTaskDate(`${hoursUntilNextTask.toFixed(2)} hours later`);
+
+          // 差分が24時間以上の場合は今すぐタスクに取り組めるので"Now"をセット
+          } else {
+            setNextTaskDate("Now");
+          }
+        } else {
+          // 過去に取り組んだデータが存在しない場合、"Now"をセット
+          setNextTaskDate("Now");
+        }
+      } catch (error) {
+        console.error("Error fetching latest task:", error);
+        setNextTaskDate("Error");
+      }
+
       const currentTimeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
       setCurrentTime(currentTimeStr);
-
-      fetch(`https://localhost:1337/api/get-latest-task?wallet=${wallet}`)
-        .then(response => response.json())
-        .then(data => {
-          if (data.created_at) {
-            setLatestTask(data);
-          }
-        })
-        .catch(error => {
-          console.error("Error fetching latest task:", error);
-        });
     };
 
     updateDateTime();
@@ -114,19 +167,10 @@ export default function Account({
     return () => clearInterval(timerID);
   }, []);
 
-  // const lastTaskDate = new Date(latestTask ? latestTask.created_at : '');
+
   const lastTaskDate = new Date(latestTask ? latestTask.created_at : '');
 
-  // const previousTaskAgo = timeAgo.format(lastTaskDate);
-
-  const previousTaskAgo = lastTaskDate instanceof Date && !isNaN(lastTaskDate.valueOf()) ? timeAgo.format(lastTaskDate) : 'Unknown';
-
-
-  const nextTaskDateObj = new Date();
-  nextTaskDateObj.setHours(nextTaskDateObj.getHours() + 24); // 現在時間に24時間加えます
-
-
-  // const nextTaskAgo = nextTaskDateObj instanceof Date && !isNaN(nextTaskDateObj.valueOf()) ? timeAgo.format(nextTaskDateObj) : 'Unknown';
+  const previousTaskAgo = lastTaskDate instanceof Date && !isNaN(lastTaskDate.valueOf()) ? timeAgo.format(lastTaskDate) : 'None';
 
 
   return (
@@ -168,7 +212,7 @@ export default function Account({
                 href="https://passport.gitcoin.co/#/dashboard"
                 target={"_blank"}
               >
-                here
+                <u>here</u>
               </a>
             </p>
           </CardContent>
@@ -195,14 +239,21 @@ export default function Account({
               {previousTaskAgo}
             </div>
             <p className="text-xs text-muted-foreground">
-              {latestTask ? new Date(latestTask.created_at).toLocaleString() : "None"}. You've earned: {" "}
-              <a
-                className="font-bold hover:text-gray-400"
-                href="https://etherscan.io/tx/0x137c6812dc363ed5f48a2135814dfcfbd6c214fc3d5e291479e9efbcd4ed4ad9"
-                target={"_blank"}
-              >
-                3.5 USD
-              </a>
+              {/* latesttaskが存在すれば、直近のタスク終了時間を表示。存在しない場合は「すぐにタスクを開始できる」と表示する */}
+              {latestTask ? new Date(latestTask.created_at).toLocaleString() : "No previous task history, you can start task from now!"}
+              {/* latesttaskが存在すれば↓ */}
+              {latestTask && (
+                <>
+                  . You've earned: {" "}
+                  <a
+                    className="font-bold hover:text-gray-400"
+                    href="https://etherscan.io/tx/0x137c6812dc363ed5f48a2135814dfcfbd6c214fc3d5e291479e9efbcd4ed4ad9"
+                    target={"_blank"}
+                  >
+                    3.5 USD
+                  </a>
+                </>
+              )}
             </p>
           </CardContent>
         </Card>
@@ -226,10 +277,15 @@ export default function Account({
             </svg>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">Static</div>
-            {/* <div className="text-2xl font-bold">{nextTaskDate}</div> */}
-            {/* <p className="text-xs text-muted-foreground">{nextTaskAgo}</p> */}
             {/* ここは、「（次のタスクを始められるまで）何時間後」 という表示にしたい*/}
+            <div className="text-2xl font-bold">{nextTaskDate}</div>
+
+            {/* latesttaskが存在すれば、直近のタスク終了時間を表示。存在しない場合は「すぐにタスクを開始できる」と表示する */}
+            {/* <div className="text-2xl font-bold">
+              {latestTask ? new Date(latestTask.created_at).toLocaleString() : "Now Available"}
+            </div> */}
+
+            {/* <p className="text-xs text-muted-foreground">{nextTaskAgo}</p> */}
           </CardContent>
         </Card>
       </div>
