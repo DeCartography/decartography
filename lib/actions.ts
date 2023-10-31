@@ -98,6 +98,8 @@ export async function getNFTs(amount: number = 6): Promise<GetNFTsResponse> {
     const addresses = await convertDictionaryToArray(jsonResponse);
     const isInitialTask = jsonResponse.is_initial_task;
 
+    console.log(jsonResponse)
+
     return { addresses, isInitialTask };
   } catch (error) {
     console.error(error);

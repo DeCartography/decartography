@@ -25,7 +25,7 @@ export default function Tasks() {
   const [submitCount, setSubmitCount] = useState(0);
 
   const [nfts, setNfts] = useState<NFT[] | null>(null);
-  console.log("nfts", nfts); //debug
+  console.log("選択肢に表示するアドレスたち: ", nfts); //debug
 
 
   const [selectedWallets, setSelectedWallets] = useState<string[]>([]);
@@ -211,6 +211,7 @@ export default function Tasks() {
     setIsSwapping(true); // Set loading state
 
     const additionalWalletsNeeded = 6 - selectedWallets.length;
+    // hanldeswapを共通化したせいで初回6こ、そのあとは3つしか呼び出されないようになっている
 
     if (additionalWalletsNeeded > 0) {
       // Fetch additional wallets from your API
