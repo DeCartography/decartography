@@ -208,7 +208,7 @@ export default function Account({
             <p className="text-xs text-muted-foreground">
               Provided by Gitcoin Passport, Increase score from {" "}
               <a
-                className="font-bold hover:text-gray-400"
+                className="hover:text-gray-400"
                 href="https://passport.gitcoin.co/#/dashboard"
                 target={"_blank"}
               >
@@ -246,11 +246,11 @@ export default function Account({
                 <>
                   . You've earned: {" "}
                   <a
-                    className="font-bold hover:text-gray-400"
+                    className="hover:text-gray-400"
                     href="https://etherscan.io/tx/0x137c6812dc363ed5f48a2135814dfcfbd6c214fc3d5e291479e9efbcd4ed4ad9"
                     target={"_blank"}
                   >
-                    3.5 USD
+                    <u>3.5 USD</u>
                   </a>
                 </>
               )}
@@ -279,13 +279,9 @@ export default function Account({
           <CardContent>
             {/* ここは、「（次のタスクを始められるまで）何時間後」 という表示にしたい*/}
             <div className="text-2xl font-bold">{nextTaskDate}</div>
-
-            {/* latesttaskが存在すれば、直近のタスク終了時間を表示。存在しない場合は「すぐにタスクを開始できる」と表示する */}
-            {/* <div className="text-2xl font-bold">
-              {latestTask ? new Date(latestTask.created_at).toLocaleString() : "Now Available"}
-            </div> */}
-
-            {/* <p className="text-xs text-muted-foreground">{nextTaskAgo}</p> */}
+            {nextTaskDate !== "Now" && (
+              <p className="text-xs text-muted-foreground"><a href="https://example.com"><u>Remind me when available</u></a></p>
+            )}
           </CardContent>
         </Card>
       </div>
