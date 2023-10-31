@@ -9,12 +9,10 @@ import { useState, useEffect } from "react";
 import TimeAgo from 'javascript-time-ago';
 import en from 'javascript-time-ago/locale/en';
 
-// Initialize the TimeAgo library
 TimeAgo.addDefaultLocale(en);
 const timeAgo = new TimeAgo('en-US');
 
 
-// APIを経由してDBから取得する「最後のタスク」の型
 type LatestTaskType = {
   created_at: Date;
 };
@@ -32,95 +30,7 @@ export default function Account({
   const [currentTime, setCurrentTime] = useState("");
 
   const [nextTaskDate, setNextTaskDate] = useState("");
-
-  const [formattedTimeAgo, setFormattedTimeAgo] = useState<string | null>(null);
-
-  // time
-
-
-
-
-  // useEffect(() => {
-  //   const updateDateTime = () => {
-  //     const now = new Date();
-  //     const nextTaskTime = new Date(now.getTime() + 24 * 60 * 60 * 1000); // +1 day in milliseconds
-
-  //     // Format the time until the next task is available
-  //     let formattedTimeUntilNextTask;
-  //     if (!latestTask || now.getTime() - new Date(latestTask.created_at).getTime() >= 24 * 60 * 60 * 1000) {
-  //       formattedTimeUntilNextTask = "Now Available";
-  //     } else {
-  //       formattedTimeUntilNextTask = timeAgo.format(nextTaskTime);
-  //     }
-
-  //     // Update state or wherever you need it
-  //     setNextTaskDate(formattedTimeUntilNextTask);
-
-
-  //     const currentTimeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
-  //     const nextTaskDateStr = `${nextTaskTime.getMonth() + 1}/${nextTaskTime.getDate()}/${nextTaskTime.getFullYear()}`;
-
-  //     setCurrentTime(currentTimeStr);
-  //     setNextTaskDate(nextTaskDateStr);
-
-  //     // fetch latest task
-  //     fetch(`https://localhost:1337/api/get-latest-task?wallet=${wallet}`)
-  //       .then(response => response.json())
-  //       // .then(data => {
-  //       //   if (data.created_at) {
-  //       //     setLatestTask(data);
-  //       //   }
-  //       // })
-  //       .then(data => {
-  //         if (data.created_at) {
-  //           setLatestTask(data);
-  //           const previousTask_date = new Date(data.created_at);
-  //           const formattedTimeAgo = timeAgo.format(previousTask_date);
-  //           // Store this formattedTimeAgo in the state or wherever you need it
-  //           setFormattedTimeAgo(formattedTimeAgo);
-  //         }
-  //         else{
-  //           console.log(`${wallet}のタスクはありません`)
-  //         }
-  //       })
-  //       .catch(error => {
-  //         console.error("Error fetching latest task:", error);
-  //       });
-  //   };
-
-  //   updateDateTime();
-  //   const timerID = setInterval(updateDateTime, 60000); // Update every 1 minute
-
-  //   return () => clearInterval(timerID);
-
-
-
-  // }, []);
-
-
-  // useEffect(() => {
-  //   const updateDateTime = () => {
-  //     const now = new Date();
-  //     const currentTimeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
-  //     setCurrentTime(currentTimeStr);
-
-  //     fetch(`https://localhost:1337/api/get-latest-task?wallet=${wallet}`)
-  //       .then(response => response.json())
-  //       .then(data => {
-  //         if (data.created_at) {
-  //           setLatestTask(data);
-  //         }
-  //       })
-  //       .catch(error => {
-  //         console.error("Error fetching latest task:", error);
-  //       });
-  //   };
-
-  //   updateDateTime();
-  //   const timerID = setInterval(updateDateTime, 60000); // Update every 1 minute
-
-  //   return () => clearInterval(timerID);
-  // }, []);
+  const [nextTaskTime, setNextTaskTime] = useState<Date | null>(null);
 
   useEffect(() => {
     const updateDateTime = async () => {
@@ -141,16 +51,18 @@ export default function Account({
           if (timeDifference < 24 * 60 * 60 * 1000) {
             // 次のタスクの時間を計算
             const nextTaskTime = new Date(latestTaskDate.getTime() + 24 * 60 * 60 * 1000);
+            setNextTaskTime(nextTaskTime); //あとでフロントにも表示したいので、Stateとして保存しておく
+
             const hoursUntilNextTask = (nextTaskTime.getTime() - now.getTime()) / (1000 * 60 * 60);
             setNextTaskDate(`${hoursUntilNextTask.toFixed(2)} hours later`);
 
-          // 差分が24時間以上の場合は今すぐタスクに取り組めるので"Now"をセット
+            // 差分が24時間以上の場合は今すぐタスクに取り組めるので"Now"をセット
           } else {
-            setNextTaskDate("Now");
+            setNextTaskDate("Now Available");
           }
         } else {
           // 過去に取り組んだデータが存在しない場合、"Now"をセット
-          setNextTaskDate("Now");
+          setNextTaskDate("Now Available");
         }
       } catch (error) {
         console.error("Error fetching latest task:", error);
@@ -203,7 +115,6 @@ export default function Account({
             </svg>
           </CardHeader>
           <CardContent>
-            {/* provided by Gitcoin Passport, Increase score from here */}
             <div className="text-2xl font-bold">{passportScore}</div>
             <p className="text-xs text-muted-foreground">
               Provided by Gitcoin Passport, Increase score from {" "}
@@ -279,8 +190,8 @@ export default function Account({
           <CardContent>
             {/* ここは、「（次のタスクを始められるまで）何時間後」 という表示にしたい*/}
             <div className="text-2xl font-bold">{nextTaskDate}</div>
-            {nextTaskDate !== "Now" && (
-              <p className="text-xs text-muted-foreground"><a href="https://example.com"><u>Remind me when available</u></a></p>
+            {nextTaskDate !== "Now Available" && nextTaskTime && (
+              <p className="text-xs text-muted-foreground">You can start next task at {nextTaskTime.toLocaleString()}, <a href="https://example.com"><u>Remind me when available</u></a></p>
             )}
           </CardContent>
         </Card>
