@@ -32,6 +32,8 @@ export default function Account({
   const [nextTaskDate, setNextTaskDate] = useState("");
   const [nextTaskTime, setNextTaskTime] = useState<Date | null>(null);
 
+
+
   useEffect(() => {
     const updateDateTime = async () => {
       const now = new Date();
@@ -53,8 +55,10 @@ export default function Account({
             const nextTaskTime = new Date(latestTaskDate.getTime() + 24 * 60 * 60 * 1000);
             setNextTaskTime(nextTaskTime); //あとでフロントにも表示したいので、Stateとして保存しておく
 
-            const hoursUntilNextTask = (nextTaskTime.getTime() - now.getTime()) / (1000 * 60 * 60);
-            setNextTaskDate(`${hoursUntilNextTask.toFixed(2)} hours later`);
+            // 次のタスクが利用可能になるまでの時間を「23h 30min later」のような形式で表示する
+            const hoursUntilNextTask = Math.floor((nextTaskTime.getTime() - now.getTime()) / (1000 * 60 * 60));
+            const minutesUntilNextTask = Math.floor(((nextTaskTime.getTime() - now.getTime()) % (1000 * 60 * 60)) / (1000 * 60));
+            setNextTaskDate(`${hoursUntilNextTask}h ${minutesUntilNextTask}min later`);
 
             // 差分が24時間以上の場合は今すぐタスクに取り組めるので"Now"をセット
           } else {

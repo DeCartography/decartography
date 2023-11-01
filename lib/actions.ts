@@ -83,7 +83,7 @@ export async function getNFTs(amount: number = 6): Promise<GetNFTsResponse> {
   if (!wallet) return { addresses: [], isInitialTask: null };
 
   try {
-    const res = await fetch(
+    const res = await   fetch(
       `https://localhost:1337/api/get-addresses?amount=${amount}`,
       {
         method: "GET",

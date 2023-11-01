@@ -30,6 +30,8 @@ export default function Tasks() {
 
   const [selectedWallets, setSelectedWallets] = useState<string[]>([]);
   const [isSwapping, setIsSwapping] = useState(false);
+  // swap用だけでなくて送信した際の文も追加する
+  const [isLoading, setIsLoding] = useState(false);
   const [loading, setLoading] = useState(true);
 
   // バックエンドで生成しているタスクがinitial_taskなのか、subsequent_tasksなのかを判断するための関数を追加。
@@ -93,26 +95,27 @@ export default function Tasks() {
       return;
     }
 
-    // //リファクタリング
-    // setAllSelectedWallets([...allSelectedWallets, selectedWallets]);
-    // setSubmittedWallets([...submittedWallets, selectedWallets]);
-
-    // リファクタリング: allSelectedWallets と submittedWallets を一度に更新
+    // payloadとして送信するために、このセッションで選択した全てのアドレスを記憶しておく
+    // tips: "..."はスプレット演算子 https://scrapbox.io/tkgshn-private/%22...%22%E3%81%AF%E3%82%B9%E3%83%97%E3%83%AC%E3%83%83%E3%83%89%E6%BC%94%E7%AE%97%E5%AD%90#6541d28538466c001bd841d5
     const newAllSelectedWallets = [...allSelectedWallets, selectedWallets];
+
+    //フロント側に「過去に選択したアドレス」を表示するための関数
     const newSubmittedWallets = [...submittedWallets, selectedWallets];
 
     setAllSelectedWallets(newAllSelectedWallets);
     setSubmittedWallets(newSubmittedWallets);
 
-
-
+    // 何回タスクを解いたかを記憶しておく
     const newSubmitCount = submitCount + 1;
     setSubmitCount(newSubmitCount);
 
     // 新しいアドレスを取得（swapと同じ処理）
-    handleSwap();
+    // handleSwap();
+    // タスクを送信した際にはhandleswapを使うのではなく、新しい選択肢を呼び出して欲しい
+    handleLoad();
 
-    console.log("selectedWallets" + selectedWallets);
+    console.log("selectedWallets", selectedWallets); // 選択したウォレットアドレスがリストに入っている
+    ///selectedWallets, 0x4820deb7bbf154739af8e446032b2647f3efcaf9,0xf738a4f3ebb32849240a4b0c71bad5bea8972689,0xaa0bd73e75aeef544d80df25790ba307aeea7c08
 
     // // 選択状態を解除
     setSelectedWallets([]);
@@ -171,40 +174,40 @@ export default function Tasks() {
   };
 
 
-  // const handleSwap = async () => {
-  //   if (!nfts) return;
-  //   setIsSwapping(true); // Set loading state
+  const handleLoad = async () => {
+    if (!nfts) return;
+    setIsLoding(true); // Set loading state
 
-  //   const additionalWalletsNeeded = 6 - selectedWallets.length;
+    const additionalWalletsNeeded = 6
 
-  //   if (additionalWalletsNeeded > 0) {
-  //     // Fetch additional wallets from your API
-  //     const newWallets = await getNFTs(additionalWalletsNeeded);
+    if (additionalWalletsNeeded > 0) {
+      // Fetch additional wallets from your API
+      const { addresses: newWallets } = await getNFTs(additionalWalletsNeeded);
 
-  //     // Check if newWallets is undefined
-  //     if (!newWallets) return console.error("Error while fetching new wallets");
+      // Check if newWallets is undefined
+      if (!newWallets) return console.error("Error while fetching new wallets");
 
-  //     // Replace unselected wallets with the new ones
-  //     const updatedNfts = nfts.map((nft) => {
-  //       if (!selectedWallets.includes(nft.address)) {
-  //         const newWallet = newWallets.pop();
-  //         if (newWallet) {
-  //           return { address: newWallet.address, links: newWallet.links };
-  //         }
-  //       }
-  //       return nft;
-  //     });
+      // Replace unselected wallets with the new ones
+      const updatedNfts = nfts.map((nft) => {
+        if (!selectedWallets.includes(nft.address)) {
+          const newWallet = newWallets.pop(); // ここも修正
+          if (newWallet) {
+            return { address: newWallet.address, links: newWallet.links };
+          }
+        }
+        return nft;
+      });
 
-  //     // Update the state with the new nfts and selectedWallets
-  //     setNfts(updatedNfts);
-  //     setSelectedWallets((prevSelected) => [
-  //       ...prevSelected,
-  //       ...newWallets.map((wallet: any) => wallet.address),
-  //     ]);
-  //   }
+      // Update the state with the new nfts and selectedWallets
+      setNfts(updatedNfts);
+      setSelectedWallets((prevSelected) => [
+        ...prevSelected,
+        ...newWallets.map((wallet: any) => wallet.address), // そしてここ
+      ]);
+    }
 
-  //   setIsSwapping(false); // Reset loading state
-  // };
+    setIsLoding(false); // Reset loading state
+  };
 
   const handleSwap = async () => {
     if (!nfts) return;
@@ -215,7 +218,7 @@ export default function Tasks() {
 
     if (additionalWalletsNeeded > 0) {
       // Fetch additional wallets from your API
-      const { addresses: newWallets } = await getNFTs(additionalWalletsNeeded); // ここを修正
+      const { addresses: newWallets } = await getNFTs(additionalWalletsNeeded);
 
       // Check if newWallets is undefined
       if (!newWallets) return console.error("Error while fetching new wallets");
@@ -303,8 +306,9 @@ export default function Tasks() {
           <Button
             size="lg"
             onClick={handleSubmit}
+            disabled={isLoading}
           >
-            Submit
+            {isLoading ? "Loading..." : "Submit"}
           </Button>
 
           <Button
