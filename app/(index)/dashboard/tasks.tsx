@@ -25,7 +25,8 @@ export default function Tasks() {
   const [submitCount, setSubmitCount] = useState(0);
 
   const [nfts, setNfts] = useState<NFT[] | null>(null);
-  console.log("選択肢に表示するアドレスたち: ", nfts); //debug
+
+  console.log("現在取り組んでいるタスクは" + submitCount + "回目です。& 選択肢に表示するアドレスたち: ", nfts)
 
 
   const [selectedWallets, setSelectedWallets] = useState<string[]>([]);
@@ -178,33 +179,24 @@ export default function Tasks() {
     if (!nfts) return;
     setIsLoding(true); // Set loading state
 
-    const additionalWalletsNeeded = 6
+    const { addresses: newWallets } = await getNFTs(6);
 
-    if (additionalWalletsNeeded > 0) {
-      // Fetch additional wallets from your API
-      const { addresses: newWallets } = await getNFTs(additionalWalletsNeeded);
+    // Check if newWallets is undefined
+    if (!newWallets) return console.error("Error while fetching new wallets");
 
-      // Check if newWallets is undefined
-      if (!newWallets) return console.error("Error while fetching new wallets");
-
-      // Replace unselected wallets with the new ones
-      const updatedNfts = nfts.map((nft) => {
-        if (!selectedWallets.includes(nft.address)) {
-          const newWallet = newWallets.pop(); // ここも修正
-          if (newWallet) {
-            return { address: newWallet.address, links: newWallet.links };
-          }
+    // Replace unselected wallets with the new ones
+    const updatedNfts = nfts.map((nft) => {
+      if (!selectedWallets.includes(nft.address)) {
+        const newWallet = newWallets.pop(); // ここも修正
+        if (newWallet) {
+          return { address: newWallet.address, links: newWallet.links };
         }
-        return nft;
-      });
+      }
+      return nft;
+    });
 
-      // Update the state with the new nfts and selectedWallets
-      setNfts(updatedNfts);
-      setSelectedWallets((prevSelected) => [
-        ...prevSelected,
-        ...newWallets.map((wallet: any) => wallet.address), // そしてここ
-      ]);
-    }
+    // Update the state with the new nfts and selectedWallets
+    setNfts(updatedNfts);
 
     setIsLoding(false); // Reset loading state
   };
