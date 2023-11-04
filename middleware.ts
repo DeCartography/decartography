@@ -31,7 +31,7 @@ export default function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("https://localhost:3000/dashboard"));
   }
 
-  console.log(request.cookies.getAll());
+  // console.log(request.cookies.getAll());
   return NextResponse.next();
 }
 

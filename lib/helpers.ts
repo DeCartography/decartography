@@ -44,12 +44,28 @@ export async function formatTransactions(
 // }
 
 
-export async function convertDictionaryToArray(jsonResponse: any): Promise<{ address: string; links: string[] }[]> {
-  const rawAddresses = jsonResponse.address_to_raw_uris;
-  const addresses: { address: string; links: string[] }[] = [];
+// // export async function convertDictionaryToArray(jsonResponse: any): Promise<{ address: string; links: string[] }[]> {
+//   export async function convertDictionaryToArray(jsonResponse: any): Promise<{ address: string; links: string[]; unselected_addresses: number }[]> {
+//   const rawAddresses = jsonResponse.address_to_raw_uris;
+//   // const addresses: { address: string; links: string[] }[] = [];
+//   const addresses: { address: string; links: string[]; unselected_addresses: number }[] = [];
 
-  for (const [address, links] of Object.entries(rawAddresses)) {
-    addresses.push({ address, links: links as string[] });
+//   for (const [address, links] of Object.entries(rawAddresses)) {
+//     addresses.push({ address, links: links as string[],
+//     unselected_addresses: unselected_addresses });
+//   }
+
+//   return addresses;
+// }
+
+
+export async function convertDictionaryToArray(jsonResponse: any): Promise<{ address: string; links: string[]; unselected_addresses: number }[]> {
+  const rawAddresses = jsonResponse.address_to_raw_uris;
+  const addresses: { address: string; links: string[]; unselected_addresses: number }[] = [];
+
+  for (const [address, data] of Object.entries(rawAddresses)) {
+    const typedData = data as { raw_uris: string[]; unselected_addresses: number };
+    addresses.push({ address, links: typedData.raw_uris, unselected_addresses: typedData.unselected_addresses });
   }
 
   return addresses;

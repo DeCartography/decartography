@@ -148,7 +148,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
 
   async function onSubmit(event: React.SyntheticEvent) {
     event.preventDefault();
-    console.log("onSubmit function is triggered"); // リダイレクト前に発火している
+    // console.log("onSubmit function is triggered"); // リダイレクト前に発火している
 
     setIsLoading(true);
 
@@ -174,7 +174,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         // 追加
         const decoded: JWTContent = jwtDecode(token); // トークンのデコード
 
-        console.log("createCookie"); // debug
+        // console.log("createCookie"); // debug
         // await createCookie({
         //   name: "_auth",
         //   value: token,
@@ -224,7 +224,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
 
 
           // ローカルでcookieを設定（この部分はオプション）
-          console.log("Current cookies:", document.cookie);
+          // console.log("Current cookies:", document.cookie);
 
           toast({
             title: "Yay! You're logged in.",

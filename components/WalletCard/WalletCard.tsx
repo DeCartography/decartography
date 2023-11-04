@@ -36,7 +36,7 @@ function WalletCard({
 }
 
 const BoxGrid = ({ images }: { images: string[] }) => {
-  console.log(images);
+  // console.log(images);
   return (
     <div
       id="box-container"

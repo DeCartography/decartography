@@ -26,11 +26,11 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 async function getTransactions(): Promise<TransactionData> {
   try {
-    console.log("getTransactions function is triggered"); // debug
+    // console.log("getTransactions function is triggered"); // debug
     const _auth = await (await cookies().get("_auth"))?.value;
-    console.log("_auth is " + _auth) // debug
+    // console.log("_auth is " + _auth) // debug
     const wallet = await (await cookies().get("address"))?.value;
-    console.log("wallet is " + wallet) // debug
+    // console.log("wallet is " + wallet) // debug
 
     if (!wallet)
       return {
@@ -119,8 +119,8 @@ export default async function DashboardPage() {
   const { transactions, balance, ethToUSD, wallet, gitcoinPassportScore } =
     await getTransactions();
 
-    console.log("gitcoinPassportScore: " + gitcoinPassportScore) // debug
-    console.log(wallet+"'s balance: " + balance + "(" + (balance * ethToUSD).toFixed(2) + " USD)")
+    // console.log("gitcoinPassportScore: " + gitcoinPassportScore) // debug
+    // console.log(wallet+"'s balance: " + balance + "(" + (balance * ethToUSD).toFixed(2) + " USD)")
 
   return (
     <>

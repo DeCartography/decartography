@@ -18,10 +18,10 @@ export async function deleteCookie(name: string) {
 }
 
 interface GetNFTsResponse {
-  addresses: {
-    address: string;
-    links: string[];
-  }[];
+  addresses: { address: string;
+               links: string[];
+               unselected_addresses: number // added
+              }[];
   isInitialTask: number | null;
 }
 
@@ -95,10 +95,11 @@ export async function getNFTs(amount: number = 6): Promise<GetNFTsResponse> {
     );
 
     const jsonResponse = await res.json();
+    console.log(jsonResponse)
+
     const addresses = await convertDictionaryToArray(jsonResponse);
     const isInitialTask = jsonResponse.is_initial_task;
 
-    console.log(jsonResponse)
 
     return { addresses, isInitialTask };
   } catch (error) {

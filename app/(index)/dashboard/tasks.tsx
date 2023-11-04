@@ -9,6 +9,7 @@ import { getNFTs } from "@/lib/actions";
 interface NFT {
   address: string;
   links: string[];
+  unselected_addresses: number; // この行を追加
 }
 
 
@@ -40,12 +41,26 @@ export default function Tasks() {
 
 
 
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const { addresses, isInitialTask } = await getNFTs(6);
+  //     setNfts(addresses as unknown as NFT[]);
+  //     setIsInitialTask(Boolean(isInitialTask));
+
+  //   };
+  //   fetchData();
+  //   setLoading(false);
+  // }, []);
+
   useEffect(() => {
     const fetchData = async () => {
       const { addresses, isInitialTask } = await getNFTs(6);
-      setNfts(addresses as unknown as NFT[]);
+      setNfts(addresses as unknown as { address: string; links: string[]; unselected_addresses: number }[]);
       setIsInitialTask(Boolean(isInitialTask));
 
+      // unselected_addressesが1のウォレットを選択状態に設定
+      const initiallySelected = addresses.filter(nft => nft.unselected_addresses === 1).map(nft => nft.address);
+      setSelectedWallets(initiallySelected);
     };
     fetchData();
     setLoading(false);
@@ -58,11 +73,34 @@ export default function Tasks() {
   //   // await setNfts(initialWallets as NFT[]);
   // };
 
+  // const toggleWallet = (address: string) => {
+  //   if (selectedWallets.length >= 3 && !selectedWallets.includes(address)) {
+  //     alert("You can only select up to 3 items. To choose another item, please deselect one.");
+  //     return;
+  //   }
+  //   setSelectedWallets((prevSelected) => {
+  //     if (prevSelected.includes(address)) {
+  //       return prevSelected.filter((wallet) => wallet !== address);
+  //     } else {
+  //       return [...prevSelected, address];
+  //     }
+  //   });
+  // };
+
   const toggleWallet = (address: string) => {
+    const wallet = nfts?.find(nft => nft.address === address);
+    if (!wallet) return;
+
+    if (wallet.unselected_addresses === 1) {
+      alert("このアドレスに似ているものを選んでください");
+      return;
+    }
+
     if (selectedWallets.length >= 3 && !selectedWallets.includes(address)) {
       alert("You can only select up to 3 items. To choose another item, please deselect one.");
       return;
     }
+
     setSelectedWallets((prevSelected) => {
       if (prevSelected.includes(address)) {
         return prevSelected.filter((wallet) => wallet !== address);
@@ -110,10 +148,6 @@ export default function Tasks() {
     const newSubmitCount = submitCount + 1;
     setSubmitCount(newSubmitCount);
 
-    // 新しいアドレスを取得（swapと同じ処理）
-    // handleSwap();
-    // タスクを送信した際にはhandleswapを使うのではなく、新しい選択肢を呼び出して欲しい
-    handleLoad();
 
     console.log("selectedWallets", selectedWallets); // 選択したウォレットアドレスがリストに入っている
     ///selectedWallets, 0x4820deb7bbf154739af8e446032b2647f3efcaf9,0xf738a4f3ebb32849240a4b0c71bad5bea8972689,0xaa0bd73e75aeef544d80df25790ba307aeea7c08
@@ -127,15 +161,15 @@ export default function Tasks() {
       // 送信するデータを作成
       const payload = {
         userAddress: getCookie("address"),
-        allSelectedWallets: newAllSelectedWallets // 更新後の allSelectedWallets を使用
+        allSelectedWallets: newAllSelectedWallets, // 更新後の allSelectedWallets を使用
+        //ここにis_initial_taskのフラグを作る
+        is_initial_task: isInitialTask //isInitialTaskはフロントエンドの表示と紐づいている
       };
 
       // コンソールに出力
-      console.log("Sending the following data to /api/insert-data:", payload);
+      console.log("Payload", payload);
 
       alert("You have reached the submission limit. Returning to the home screen.");
-
-
 
       /*
       POST like this:
@@ -170,35 +204,56 @@ export default function Tasks() {
 
       // ホーム画面へリダイレクト（具体的な方法はプロジェクトに依存）
       window.location.href = "/dashboard?tab=wallets";
+
+      return; //タスクの上限に達した場合はここで処理を終了する
     }
+
+    // 新しいアドレスを取得（swapと同じ処理）
+    // handleSwap();
+    // タスクを送信した際にはhandleswapを使うのではなく、新しい選択肢を呼び出して欲しい
+    handleLoad();
 
   };
 
 
+  // const handleLoad = async () => {
+  //   if (!nfts) return;
+  //   setIsLoding(true); // Set loading state
+
+  //   const { addresses: newWallets } = await getNFTs(6);
+
+  //   // Check if newWallets is undefined
+  //   if (!newWallets) return console.error("Error while fetching new wallets");
+
+  //   // Replace unselected wallets with the new ones
+  //   const updatedNfts = nfts.map((nft) => {
+  //     if (!selectedWallets.includes(nft.address)) {
+  //       const newWallet = newWallets.pop(); // ここも修正
+  //       if (newWallet) {
+  //         return { address: newWallet.address, links: newWallet.links };
+  //       }
+  //     }
+  //     return nft;
+  //   });
+
+  //   // Update the state with the new nfts and selectedWallets
+  //   setNfts(updatedNfts);
+
+  //   setIsLoding(false); // Reset loading state
+  // };
+  // app/(index)/dashboard/tasks.tsx
+
   const handleLoad = async () => {
-    if (!nfts) return;
-    setIsLoding(true); // Set loading state
+    setIsLoding(true);
+    const { addresses, isInitialTask } = await getNFTs(6);
+    setNfts(addresses as unknown as { address: string; links: string[]; unselected_addresses: number }[]);
+    setIsInitialTask(Boolean(isInitialTask));
 
-    const { addresses: newWallets } = await getNFTs(6);
+    // unselected_addressesが1のウォレットを選択状態に設定
+    const initiallySelected = addresses.filter(nft => nft.unselected_addresses === 1).map(nft => nft.address);
+    setSelectedWallets(initiallySelected);
 
-    // Check if newWallets is undefined
-    if (!newWallets) return console.error("Error while fetching new wallets");
-
-    // Replace unselected wallets with the new ones
-    const updatedNfts = nfts.map((nft) => {
-      if (!selectedWallets.includes(nft.address)) {
-        const newWallet = newWallets.pop(); // ここも修正
-        if (newWallet) {
-          return { address: newWallet.address, links: newWallet.links };
-        }
-      }
-      return nft;
-    });
-
-    // Update the state with the new nfts and selectedWallets
-    setNfts(updatedNfts);
-
-    setIsLoding(false); // Reset loading state
+    setIsLoding(false);
   };
 
   const handleSwap = async () => {
@@ -216,11 +271,16 @@ export default function Tasks() {
       if (!newWallets) return console.error("Error while fetching new wallets");
 
       // Replace unselected wallets with the new ones
+      // Replace unselected wallets with the new ones
       const updatedNfts = nfts.map((nft) => {
         if (!selectedWallets.includes(nft.address)) {
           const newWallet = newWallets.pop(); // ここも修正
           if (newWallet) {
-            return { address: newWallet.address, links: newWallet.links };
+            return {
+              address: newWallet.address,
+              links: newWallet.links,
+              unselected_addresses: newWallet.unselected_addresses // この行を追加
+            };
           }
         }
         return nft;
@@ -256,7 +316,7 @@ export default function Tasks() {
 
         <div>
           <h3>Current Task Count:</h3>
-          <p>{submitCount} / {maxSubmitCount}</p>
+          <p>{submitCount+1} / {maxSubmitCount}</p>
         </div>
 
         <br></br>
