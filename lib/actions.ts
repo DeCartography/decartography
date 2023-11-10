@@ -20,7 +20,7 @@ export async function deleteCookie(name: string) {
 interface GetNFTsResponse {
   addresses: { address: string;
                links: string[];
-               unselected_addresses: number // added
+               is_never_selected_address: number // added
               }[];
   isInitialTask: number | null;
 }
@@ -75,16 +75,51 @@ interface GetNFTsResponse {
 // }
 
 
-export async function getNFTs(amount: number = 6): Promise<GetNFTsResponse> {
+// export async function getNFTs(amount: number = 6): Promise<GetNFTsResponse> {
+//   "use server";
+//   const _auth = await (await cookies().get("_auth"))?.value;
+//   const wallet = await (await cookies().get("address"))?.value;
+
+//   if (!wallet) return { addresses: [], isInitialTask: null };
+
+//   try {
+//     const res = await   fetch(
+//       `https://localhost:1337/api/get-addresses?amount=${amount}`,
+//       {
+//         method: "GET",
+//         headers: {
+//           "Content-Type": "application/json",
+//           Authorization: `Bearer ${_auth}`,
+//         },
+//       },
+//     );
+
+//     const jsonResponse = await res.json();
+//     console.log(jsonResponse)
+
+//     const addresses = await convertDictionaryToArray(jsonResponse);
+//     const isInitialTask = jsonResponse.is_initial_task;
+
+//     console.log("jsonResponse.address_to_raw_uris:", jsonResponse.address_to_raw_uris); //debug
+
+//     return { addresses, isInitialTask };
+//   } catch (error) {
+//     console.error(error);
+//     return { addresses: [], isInitialTask: null };
+//   }
+// }
+
+// is_swapを含めたバージョン
+export async function getNFTs(amount: number = 6, is_swap: boolean = false): Promise<GetNFTsResponse> {
   "use server";
   const _auth = await (await cookies().get("_auth"))?.value;
   const wallet = await (await cookies().get("address"))?.value;
 
-  if (!wallet) return { addresses: [], isInitialTask: null };
+  if (!wallet) return { addresses: [], isInitialTask: null }; // cookieから現在ログイン中のアドレスを取得できなかった場合は空の配列を返す
 
   try {
-    const res = await   fetch(
-      `https://localhost:1337/api/get-addresses?amount=${amount}`,
+    const res = await fetch(
+      `https://localhost:1337/api/get-addresses?amount=${amount}&is_swap=${is_swap}`,
       {
         method: "GET",
         headers: {
@@ -100,6 +135,7 @@ export async function getNFTs(amount: number = 6): Promise<GetNFTsResponse> {
     const addresses = await convertDictionaryToArray(jsonResponse);
     const isInitialTask = jsonResponse.is_initial_task;
 
+    console.log("jsonResponse.address_to_raw_uris:", jsonResponse.address_to_raw_uris); //debug
 
     return { addresses, isInitialTask };
   } catch (error) {

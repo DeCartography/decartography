@@ -45,28 +45,47 @@ export async function formatTransactions(
 
 
 // // export async function convertDictionaryToArray(jsonResponse: any): Promise<{ address: string; links: string[] }[]> {
-//   export async function convertDictionaryToArray(jsonResponse: any): Promise<{ address: string; links: string[]; unselected_addresses: number }[]> {
+//   export async function convertDictionaryToArray(jsonResponse: any): Promise<{ address: string; links: string[]; is_never_selected_address: number }[]> {
 //   const rawAddresses = jsonResponse.address_to_raw_uris;
 //   // const addresses: { address: string; links: string[] }[] = [];
-//   const addresses: { address: string; links: string[]; unselected_addresses: number }[] = [];
 
 //   for (const [address, links] of Object.entries(rawAddresses)) {
 //     addresses.push({ address, links: links as string[],
-//     unselected_addresses: unselected_addresses });
+//     is_never_selected_address: is_never_selected_address });
 //   }
 
 //   return addresses;
 // }
 
 
-export async function convertDictionaryToArray(jsonResponse: any): Promise<{ address: string; links: string[]; unselected_addresses: number }[]> {
+// export async function convertDictionaryToArray(jsonResponse: any): Promise<{ address: string; links: string[]; is_never_selected_address: number }[]> {
+//   const rawAddresses = jsonResponse.address_to_raw_uris;
+//   const addresses: { address: string; links: string[]; is_never_selected_address: number }[] = [];
+
+//   for (const [address, data] of Object.entries(rawAddresses)) {
+//     const typedData = data as { raw_uris: string[]; is_never_selected_address: number };
+//     addresses.push({ address, links: typedData.raw_uris, is_never_selected_address: typedData.is_never_selected_address });
+//   }
+
+//   console.log("convertDictionaryToArray: addresses", addresses)
+
+//   return addresses;
+// }
+
+export async function convertDictionaryToArray(jsonResponse: any): Promise<{ address: string; links: string[]; is_never_selected_address: number }[]> {
   const rawAddresses = jsonResponse.address_to_raw_uris;
-  const addresses: { address: string; links: string[]; unselected_addresses: number }[] = [];
+  const addresses: { address: string; links: string[]; is_never_selected_address: number }[] = [];
 
   for (const [address, data] of Object.entries(rawAddresses)) {
-    const typedData = data as { raw_uris: string[]; unselected_addresses: number };
-    addresses.push({ address, links: typedData.raw_uris, unselected_addresses: typedData.unselected_addresses });
+    if (Array.isArray(data)) {
+      addresses.push({ address, links: data, is_never_selected_address: 0 });
+    } else {
+      const typedData = data as { raw_uris: string[]; is_never_selected_address: number };
+      addresses.push({ address, links: typedData.raw_uris, is_never_selected_address: typedData.is_never_selected_address });
+    }
   }
+
+  console.log("convertDictionaryToArray: addresses", addresses)
 
   return addresses;
 }
