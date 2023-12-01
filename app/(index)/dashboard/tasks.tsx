@@ -455,16 +455,25 @@ export default function Tasks() {
   }
 
   return (
-    <div className="flex"> {/* 追加: 最外部のflexコンテナ */}
+
+    // スマホ（原則）は縦、md以上は横並びにする
+    <div className="flex flex-col mt-100 md:flex-row">
+    {/* // <div className="flex flex-col lg:flex-row"> 最外部のflexコンテナの方向を変更 */}
+    {/* <div className="flex"> 追加: 最外部のflexコンテナ */}
+    {/* // <div className="flex flex-col lg:flex-row"> 最外部のflexコンテナの方向を変更 */}
 
       {/* 追加: サイドバー */}
-      <div className="w-1/5 min-h-screen p-4 border-r">
+      {/* <div className="w-1/5 min-h-screen p-4 border-r"> */}
+      {/* <div className="w-full md:w-1/5 min-h-screen p-4 border-r md:border-r-0 md:border-b"> */}
+      {/* <div className="z-40 w-64 h-10 md:z-40 w-64 h-10"> */}
+      <div className="basis-1/4">
+      {/* <div className="w-full lg:w-1/5 min-h-screen p-4 border-b lg:border-r-0 lg:border-b-0"> */}
 
-        <div>
-          {/* 新たに追加: is_initial_task の情報を表示 */}
+      {/* 新たに追加: is_initial_task の情報を表示 */}
+        {/* <div>
           <h3>Is this an Initial Task?:</h3>
           <p>{isInitialTask !== null ? (isInitialTask ? "Yes" : "No") : "Loading..."}</p>
-        </div>
+        </div> */}
 
         <div>
           <h3>Current Task Count:</h3>
@@ -473,7 +482,7 @@ export default function Tasks() {
 
         <br></br>
 
-        <div>
+        {/* <div>
           <h3>過去に入力したアドレス:</h3>
           <ul>
             {submittedWallets.map((addresses, index) => (
@@ -482,17 +491,22 @@ export default function Tasks() {
               </li>
             ))}
           </ul>
-        </div>
+        </div> */}
 
       </div>
 
 
-      <div className="flex-1 overflow-auto">
+      {/* <div className="flex-1 overflow-auto"> */}
+      <div className="basis-3/4 md:basis-2/4">
 
         {/* タスク表示部分 */}
-        <div className="flex flex-col items-center gap-8 lg:grid lg:grid-cols-3 lg:grid-rows-3">
+        {/* <div className="flex flex-col items-center gap-8 lg:grid lg:grid-cols-3 lg:grid-rows-3"> */}
+        {/* <div className="grid gap-4 grid-cols-3 grid-rows-3"> */}
+        <div className="grid gap-4 grid-cols-2 grid-rows-3 lg:grid lg:grid-cols-3 lg:grid-rows-3">
+        {/* スマホは2列づつ、他は3でいい // スマホ（原則）は縦、md以上は横並びにする*/}
           {nfts.map((nft) => (
-            <div key={nft.address} className="max-w-[300px]">
+            // <div key={nft.address} className="max-w-[300px]">
+            <div key={nft.address} className="w-full">
               <WalletCard
                 images={nft.links}
                 selected={selectedWallets.includes(nft.address)}
@@ -505,17 +519,24 @@ export default function Tasks() {
 
       </div>
       {/* ボタン部分 */}
-      <div className="flex flex-shrink-0">
-        <div className="ml-auto mr-auto flex gap-4 self-start lg:flex-col">
+
+      {/* <div className="p-4 fixed bottom-0 w-full bg-white md:basis-1/4 md:bg-black"> */}
+      <div className="md:basis-1/4 md:bg-black">
+      {/* <div className="fixed bottom-0 p-4 bg-black shadow-md md:basis-1/4 md:bottom md:bg-white md:flex-shrink-0"> */}
+        {/* <div className="ml-auto mr-auto flex gap-4 self-start md:flex-col"> */}
+        {/* ある程度画面サイズがある場合は縦にボタンを並べる */}
+        <div className="flex-row md:flex-col">
+
           <Button
+            className="md:px-8 md:my-2 md:mx-8"
             size="lg"
             onClick={handleSubmit}
             disabled={isLoading}
           >
             {isLoading ? "Loading..." : "Submit"}
           </Button>
-
           <Button
+            className="md:px-8 md:my-2 md:mx-8"
             variant={"outline"}
             size="lg"
             onClick={handleSwap}
@@ -523,6 +544,7 @@ export default function Tasks() {
           >
             {isSwapping ? "Swapping..." : "Swap"}
           </Button>
+
         </div>
       </div>
 
