@@ -3,15 +3,23 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Transaction, columns } from "@/components/ActivityTable/Columns";
 import DataTable from "@/components/ActivityTable";
 
+
+
 export default function Wallets({
   balance,
   transactions,
   ethToUSD,
+  wallet,
 }: {
   balance: number;
   transactions: Transaction[];
   ethToUSD: number;
-}) {
+  wallet: string;
+})
+
+
+
+{
   return (
     <div className="mt-5 space-y-8">
       <div className="space-y-2">
@@ -21,7 +29,9 @@ export default function Wallets({
         </p>
         <p>
           <a
-            href="https://google.com"
+            // href="https://google.com"
+            href={`https://etherscan.io/address/${wallet}`}
+            target="_blank"
             className="text-sm font-semibold text-primary hover:underline hover:underline-offset-4"
           >
             More details in explorer

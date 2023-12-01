@@ -233,6 +233,23 @@ export default function Tasks() {
       // ホーム画面へリダイレクト（具体的な方法はプロジェクトに依存）
       window.location.href = "/dashboard?tab=wallets";
 
+
+      // const claiminfo = {
+      //   userAddress: getCookie("address"),
+      // };
+      // ここでPOSTでAPIを叩く
+      console.error("claim_ethを叩きました")
+      fetch('https://localhost:1337/api/claim_eth', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        // body: JSON.stringify(claiminfo)
+        body: JSON.stringify({ userAddress: getCookie("address") }) //cookieから取得できるアドレスをuserAddressとしてJSONリクエストに含める
+      });
+      // fetch(`https://localhost:1337/api/get-latest-task?wallet=${wallet}`);
+      // const data = await response.json();
+
       return; //タスクの上限に達した場合はここで処理を終了する
     }
 

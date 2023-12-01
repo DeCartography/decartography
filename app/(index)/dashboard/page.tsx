@@ -137,6 +137,7 @@ export default async function DashboardPage() {
             balance={balance}
             transactions={transactions as Transaction[]}
             ethToUSD={ethToUSD}
+            wallet={wallet}
           />
         </TabsContent>
       </Tabs>
