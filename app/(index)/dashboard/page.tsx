@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatTransactions } from "@/lib/helpers";
 import { Transaction } from "@/components/ActivityTable/Columns";
 import { cookies } from "next/headers";
+
 import AccountView from "./account";
 import WalletsView from "./wallets";
 
@@ -25,12 +26,11 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 async function getTransactions(): Promise<TransactionData> {
   try {
-    console.log("getTransactions function is triggered"); // debug
+    // console.log("getTransactions function is triggered"); // debug
     const _auth = await (await cookies().get("_auth"))?.value;
-    console.log("_auth is " + _auth) // debug
+    // console.log("_auth is " + _auth) // debug
     const wallet = await (await cookies().get("address"))?.value;
-    // cookieの中の"wallet"を参照しているんだけど、中身がないから空になっている
-    console.log("wallet is " + wallet) // debug
+    // console.log("wallet is " + wallet) // debug
 
     if (!wallet)
       return {
@@ -112,11 +112,15 @@ async function getTransactions(): Promise<TransactionData> {
 }
 
 export default async function DashboardPage() {
+
+
+  //todo: redirect to dashboard?tab=wallets as directly
+
   const { transactions, balance, ethToUSD, wallet, gitcoinPassportScore } =
     await getTransactions();
 
-    console.log("gitcoinPassportScore: " + gitcoinPassportScore) // debug
-    console.log(wallet+"'s balance: " + balance + "(" + (balance * ethToUSD).toFixed(2) + " USD)")
+    // console.log("gitcoinPassportScore: " + gitcoinPassportScore) // debug
+    // console.log(wallet+"'s balance: " + balance + "(" + (balance * ethToUSD).toFixed(2) + " USD)")
 
   return (
     <>
@@ -133,6 +137,7 @@ export default async function DashboardPage() {
             balance={balance}
             transactions={transactions as Transaction[]}
             ethToUSD={ethToUSD}
+            wallet={wallet}
           />
         </TabsContent>
       </Tabs>
