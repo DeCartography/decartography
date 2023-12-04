@@ -110,7 +110,7 @@ export default function Tasks() {
 
     // クリックしたウォレットにis_never_selected_address（最初から選択されている）タグがついていた場合の処理:
     if (wallet.is_never_selected_address === 1) {
-      alert("このアドレスはシステム上最初から✅されています。クリックしても解除できません。他の選択肢の中から、このアドレスに似ているものを選んでください");
+      alert("This address is ✅ed from the beginning in the system. It cannot be removed by clicking on it. Please choose one of the other options that is similar to this address");
       return;
     }
 
@@ -189,6 +189,7 @@ export default function Tasks() {
       // 送信するデータを作成
       const payload = {
         userAddress: getCookie("address"),
+        _auth: getCookie("_auth"), //cookieから取得できる_authを_authとしてJSONリクエストに含める
         allSelectedWallets: newAllSelectedWallets, // 更新後の allSelectedWallets を使用
         //ここにis_initial_taskのフラグを作る
         is_initial_task: isInitialTask //isInitialTaskはフロントエンドの表示と紐づいている
@@ -244,8 +245,12 @@ export default function Tasks() {
         headers: {
           'Content-Type': 'application/json'
         },
+        credentials: 'include',  // この行を追加
         // body: JSON.stringify(claiminfo)
-        body: JSON.stringify({ userAddress: getCookie("address") }) //cookieから取得できるアドレスをuserAddressとしてJSONリクエストに含める
+        body: JSON.stringify({
+          userAddress: getCookie("address"),
+          _auth: getCookie("_auth") //cookieから取得できる_authを_authとしてJSONリクエストに含める
+      }) //cookieから取得できるアドレスをuserAddressとしてJSONリクエストに含める
       });
       // fetch(`https://localhost:1337/api/get-latest-task?wallet=${wallet}`);
       // const data = await response.json();
