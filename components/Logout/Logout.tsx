@@ -11,7 +11,9 @@ function Logout({ className, ...props }: { className?: string }) {
   const router = useRouter();
   const handleClick = async () => {
     setLoading(true);
+    // 全てのCookieを削除
     await deleteCookie("_auth");
+    await deleteCookie("address");
     setLoading(false);
     return router.push("/");
   };

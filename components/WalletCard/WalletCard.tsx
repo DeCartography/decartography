@@ -22,6 +22,7 @@ function WalletCard({
           <Checkbox onClick={toggleSelected} checked={selected} />
         </div>
         <div className="relative flex min-h-full items-center justify-center">
+          {/* imagesの長さが1以上の場合はBoxGridを表示、それ以外の場合はNo NFTs for this walletを表示 */}
           {images.length > 1 ? (
             <BoxGrid images={images} />
           ) : (
@@ -36,7 +37,7 @@ function WalletCard({
 }
 
 const BoxGrid = ({ images }: { images: string[] }) => {
-  console.log(images);
+  // console.log(images);
   return (
     <div
       id="box-container"

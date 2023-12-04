@@ -19,6 +19,7 @@ const SheetPortal = ({
 }: SheetPrimitive.DialogPortalProps) => (
   <SheetPrimitive.Portal className={cn(className)} {...props} />
 )
+
 SheetPortal.displayName = SheetPrimitive.Portal.displayName
 
 const SheetOverlay = React.forwardRef<
