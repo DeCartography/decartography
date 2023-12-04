@@ -110,7 +110,7 @@ export default function Tasks() {
 
     // クリックしたウォレットにis_never_selected_address（最初から選択されている）タグがついていた場合の処理:
     if (wallet.is_never_selected_address === 1) {
-      alert("このアドレスはシステム上最初から✅されています。クリックしても解除できません。他の選択肢の中から、このアドレスに似ているものを選んでください");
+      alert("This address is ✅ed from the beginning in the system. It cannot be removed by clicking on it. Please choose one of the other options that is similar to this address");
       return;
     }
 
@@ -189,6 +189,7 @@ export default function Tasks() {
       // 送信するデータを作成
       const payload = {
         userAddress: getCookie("address"),
+        _auth: getCookie("_auth"), //cookieから取得できる_authを_authとしてJSONリクエストに含める
         allSelectedWallets: newAllSelectedWallets, // 更新後の allSelectedWallets を使用
         //ここにis_initial_taskのフラグを作る
         is_initial_task: isInitialTask //isInitialTaskはフロントエンドの表示と紐づいている
@@ -232,6 +233,27 @@ export default function Tasks() {
 
       // ホーム画面へリダイレクト（具体的な方法はプロジェクトに依存）
       window.location.href = "/dashboard?tab=wallets";
+
+
+      // const claiminfo = {
+      //   userAddress: getCookie("address"),
+      // };
+      // ここでPOSTでAPIを叩く
+      console.error("claim_ethを叩きました")
+      fetch('https://localhost:1337/api/claim_eth', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',  // この行を追加
+        // body: JSON.stringify(claiminfo)
+        body: JSON.stringify({
+          userAddress: getCookie("address"),
+          _auth: getCookie("_auth") //cookieから取得できる_authを_authとしてJSONリクエストに含める
+      }) //cookieから取得できるアドレスをuserAddressとしてJSONリクエストに含める
+      });
+      // fetch(`https://localhost:1337/api/get-latest-task?wallet=${wallet}`);
+      // const data = await response.json();
 
       return; //タスクの上限に達した場合はここで処理を終了する
     }
@@ -438,16 +460,25 @@ export default function Tasks() {
   }
 
   return (
-    <div className="flex"> {/* 追加: 最外部のflexコンテナ */}
+
+    // スマホ（原則）は縦、md以上は横並びにする
+    <div className="flex flex-col mt-100 md:flex-row">
+    {/* // <div className="flex flex-col lg:flex-row"> 最外部のflexコンテナの方向を変更 */}
+    {/* <div className="flex"> 追加: 最外部のflexコンテナ */}
+    {/* // <div className="flex flex-col lg:flex-row"> 最外部のflexコンテナの方向を変更 */}
 
       {/* 追加: サイドバー */}
-      <div className="w-1/5 min-h-screen p-4 border-r">
+      {/* <div className="w-1/5 min-h-screen p-4 border-r"> */}
+      {/* <div className="w-full md:w-1/5 min-h-screen p-4 border-r md:border-r-0 md:border-b"> */}
+      {/* <div className="z-40 w-64 h-10 md:z-40 w-64 h-10"> */}
+      <div className="basis-1/4">
+      {/* <div className="w-full lg:w-1/5 min-h-screen p-4 border-b lg:border-r-0 lg:border-b-0"> */}
 
-        <div>
-          {/* 新たに追加: is_initial_task の情報を表示 */}
+      {/* 新たに追加: is_initial_task の情報を表示 */}
+        {/* <div>
           <h3>Is this an Initial Task?:</h3>
           <p>{isInitialTask !== null ? (isInitialTask ? "Yes" : "No") : "Loading..."}</p>
-        </div>
+        </div> */}
 
         <div>
           <h3>Current Task Count:</h3>
@@ -456,7 +487,7 @@ export default function Tasks() {
 
         <br></br>
 
-        <div>
+        {/* <div>
           <h3>過去に入力したアドレス:</h3>
           <ul>
             {submittedWallets.map((addresses, index) => (
@@ -465,17 +496,22 @@ export default function Tasks() {
               </li>
             ))}
           </ul>
-        </div>
+        </div> */}
 
       </div>
 
 
-      <div className="flex-1 overflow-auto">
+      {/* <div className="flex-1 overflow-auto"> */}
+      <div className="basis-3/4 md:basis-2/4">
 
         {/* タスク表示部分 */}
-        <div className="flex flex-col items-center gap-8 lg:grid lg:grid-cols-3 lg:grid-rows-3">
+        {/* <div className="flex flex-col items-center gap-8 lg:grid lg:grid-cols-3 lg:grid-rows-3"> */}
+        {/* <div className="grid gap-4 grid-cols-3 grid-rows-3"> */}
+        <div className="grid gap-4 grid-cols-2 grid-rows-3 lg:grid lg:grid-cols-3 lg:grid-rows-3">
+        {/* スマホは2列づつ、他は3でいい // スマホ（原則）は縦、md以上は横並びにする*/}
           {nfts.map((nft) => (
-            <div key={nft.address} className="max-w-[300px]">
+            // <div key={nft.address} className="max-w-[300px]">
+            <div key={nft.address} className="w-full">
               <WalletCard
                 images={nft.links}
                 selected={selectedWallets.includes(nft.address)}
@@ -488,17 +524,24 @@ export default function Tasks() {
 
       </div>
       {/* ボタン部分 */}
-      <div className="flex flex-shrink-0">
-        <div className="ml-auto mr-auto flex gap-4 self-start lg:flex-col">
+
+      {/* <div className="p-4 fixed bottom-0 w-full bg-white md:basis-1/4 md:bg-black"> */}
+      <div className="md:basis-1/4 md:bg-black">
+      {/* <div className="fixed bottom-0 p-4 bg-black shadow-md md:basis-1/4 md:bottom md:bg-white md:flex-shrink-0"> */}
+        {/* <div className="ml-auto mr-auto flex gap-4 self-start md:flex-col"> */}
+        {/* ある程度画面サイズがある場合は縦にボタンを並べる */}
+        <div className="flex-row md:flex-col">
+
           <Button
+            className="md:px-8 md:my-2 md:mx-8"
             size="lg"
             onClick={handleSubmit}
             disabled={isLoading}
           >
             {isLoading ? "Loading..." : "Submit"}
           </Button>
-
           <Button
+            className="md:px-8 md:my-2 md:mx-8"
             variant={"outline"}
             size="lg"
             onClick={handleSwap}
@@ -506,6 +549,7 @@ export default function Tasks() {
           >
             {isSwapping ? "Swapping..." : "Swap"}
           </Button>
+
         </div>
       </div>
 
