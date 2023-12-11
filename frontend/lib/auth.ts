@@ -35,7 +35,8 @@ export const handleLogin = async (): Promise<string | Error> => {
     //   `${baseUrl}/api/signing-message?address=${account}`,
     // );
     const response = await fetch(
-      `https://localhost:1337/api/signing-message?address=${account}`,
+      // `https://localhost:1337/api/signing-message?address=${account}`,
+      `http://localhost:1337/api/signing-message?address=${account}`,
     );
     const result = await response.json();
     const signingMessage = result.signing_message;
@@ -53,7 +54,8 @@ export const handleLogin = async (): Promise<string | Error> => {
 
     // Send authentication details to the backend for verification
     // const authResponse = await fetch(`${baseUrl}/api/submit-passport`, {
-      const authResponse = await fetch(`https://localhost:1337/api/submit-passport`, {
+      // const authResponse = await fetch(`https://localhost:1337/api/submit-passport`, {
+      const authResponse = await fetch(`http://localhost:1337/api/submit-passport`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -210,7 +210,8 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         //   body: JSON.stringify({ token }),
         // });
 
-        const response = await fetch("https://localhost:1337/api/set-auth-cookie", {
+        // const response = await fetch("https://localhost:1337/api/set-auth-cookie", {
+        const response = await fetch("http://localhost:1337/api/set-auth-cookie", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

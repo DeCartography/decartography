@@ -17,15 +17,14 @@ function WalletCard({
 }) {
   return (
     <div className={cn(selected === true && "opacity-60")}>
-      {/* <Card className="relative h-[300px] w-[300px] overflow-hidden p-4"> */}
+      <Card className="relative h-[200px] w-[200px] overflow-hidden p-4">
       {/* <Card className="relative h-full w-full overflow-hidden p-4"> */}
-      <Card className="relative h-full w-full overflow-hidden p-4">
         {/* flex flex-col md:flex-row// スマホ（原則）は縦、md以上は横並びにする */}
         <div className="absolute right-3 top-2 z-40">
           <Checkbox onClick={toggleSelected} checked={selected} />
         </div>
-        <div className="relative flex min-h-full items-center justify-center">
-        {/* <div className="relative flex h-full w-full items-center justify-center"> */}
+        {/* <div className="relative flex min-h-full items-center justify-center"> */}
+        <div className="relative flex h-full w-full items-center justify-center">
           {/* imagesの長さが1以上の場合はBoxGridを表示、それ以外の場合はNo NFTs for this walletを表示 */}
           {images.length > 1 ? (
             <BoxGrid images={images} />

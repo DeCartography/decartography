@@ -223,7 +223,8 @@ export default function Tasks() {
           ]
       }
       */
-      fetch('https://localhost:1337/api/insert-data', {
+      // fetch('https://localhost:1337/api/insert-data', {
+      fetch('http://localhost:1337/api/insert-data', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -240,7 +241,8 @@ export default function Tasks() {
       // };
       // ここでPOSTでAPIを叩く
       console.error("claim_ethを叩きました")
-      fetch('https://localhost:1337/api/claim_eth', {
+      // fetch('https://localhost:1337/api/claim_eth', {
+      fetch('http://localhost:1337/api/claim_eth', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -526,7 +528,8 @@ export default function Tasks() {
       {/* ボタン部分 */}
 
       {/* <div className="p-4 fixed bottom-0 w-full bg-white md:basis-1/4 md:bg-black"> */}
-      <div className="md:basis-1/4 md:bg-black">
+      {/* <div className="md:basis-1/4 md:bg-black"> */}
+      <div className="md:basis-1/4">
       {/* <div className="fixed bottom-0 p-4 bg-black shadow-md md:basis-1/4 md:bottom md:bg-white md:flex-shrink-0"> */}
         {/* <div className="ml-auto mr-auto flex gap-4 self-start md:flex-col"> */}
         {/* ある程度画面サイズがある場合は縦にボタンを並べる */}

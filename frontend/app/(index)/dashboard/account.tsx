@@ -40,7 +40,8 @@ export default function Account({
 
       try {
         // まずはlatesttaskを取得する
-        const response = await fetch(`https://localhost:1337/api/get-latest-task?wallet=${wallet}`);
+        // const response = await fetch(`https://localhost:1337/api/get-latest-task?wallet=${wallet}`);
+        const response = await fetch(`http://localhost:1337/api/get-latest-task?wallet=${wallet}`);
         const data = await response.json();
 
         // 過去に取り組んだデータがある場合:

@@ -7,13 +7,13 @@ const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
-// SSL証明書と鍵を読み込む
-const httpsOptions = {
-  // key: fs.readFileSync('./local.key'),
-  // cert: fs.readFileSync('./local.crt')
-  key: fs.readFileSync('./key.pem'),
-  cert: fs.readFileSync('./cert.pem')
-};
+// // SSL証明書と鍵を読み込む
+// const httpsOptions = {
+//   // key: fs.readFileSync('./local.key'),
+//   // cert: fs.readFileSync('./local.crt')
+//   key: fs.readFileSync('./key.pem'),
+//   cert: fs.readFileSync('./cert.pem')
+// };
 
 app.prepare().then(() => {
   createServer(httpsOptions, (req, res) => {
@@ -21,7 +21,8 @@ app.prepare().then(() => {
     handle(req, res, parsedUrl);
   }).listen(3000, (err) => {
     if (err) throw err;
-    console.log('> Ready on https://localhost:3000');
+    // console.log('> Ready on https://localhost:3000');
+    console.log('> Ready on http://localhost:3000')
   });
 });
 

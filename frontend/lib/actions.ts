@@ -119,7 +119,8 @@ export async function getNFTs(amount: number = 6, is_swap: boolean = false): Pro
 
   try {
     const res = await fetch(
-      `https://localhost:1337/api/get-addresses?amount=${amount}&is_swap=${is_swap}`,
+      // `https://localhost:1337/api/get-addresses?amount=${amount}&is_swap=${is_swap}`,
+      `http://localhost:1337/api/get-addresses?amount=${amount}&is_swap=${is_swap}`,
       {
         method: "GET",
         headers: {
