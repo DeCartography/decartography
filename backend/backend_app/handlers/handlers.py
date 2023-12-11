@@ -1089,7 +1089,8 @@ def create_additional_task(cursor, addresses: list, CurrentTaskState: CurrentTas
 @app.route('/api/get-addresses', methods=['GET'])
 def get_addresses_and_nfts_handler() -> Response:
 
-    filepath = "./backend_app/static/mvp_addresses30file.json"  # 分析対象のウォレットアドレスがあるファイルパス
+    # filepath = "./backend_app/static/mvp_addresses30file.json"  # 分析対象のウォレットアドレスがあるファイルパス
+    filepath = "./backend_app/static/gr15_addresses.json"  # 分析対象のウォレットアドレスがあるファイルパス
     # filename = os.path.basename(filepath).split("~")[0]
 
     # 分析対象のファイルからアドレスを抜きだす
