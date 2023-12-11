@@ -197,7 +197,10 @@ def ethereum_transactions_handler():
     if not address:
         abort(400, description="Ethereum address is required as a query parameter")
 
-    api_url = f"https://api.etherscan.io/api?module=account&action=txlist&address={address}&sort=desc&apikey={os.environ['ETHERSCAN_API_KEY']}"
+    # api_url = f"https://api.etherscan.io/api?module=account&action=txlist&address={address}&sort=desc&apikey={os.environ['ETHERSCAN_API_KEY']}" これはmain net
+
+    api_url = f"https://api-goerli.etherscan.io/api?module=account&action=txlist&address={address}&sort=desc&apikey={os.environ['ETHERSCAN_API_KEY']}"
+
 
     try:
         resp = requests.get(api_url)
@@ -222,7 +225,10 @@ def ether_balance_handler():
     if not address:
         abort(400, description="Ethereum address is required as a query parameter")
 
-    api_url = f"https://api.etherscan.io/api?module=account&action=balance&address={address}&tag=latest&apikey={os.environ['ETHERSCAN_API_KEY']}"
+    # api_url = f"https://api.etherscan.io/api?module=account&action=balance&address={address}&tag=latest&apikey={os.environ['ETHERSCAN_API_KEY']}"
+
+    api_url = f"https://api-goerli.etherscan.io/api?module=account&action=balance&address={address}&tag=latest&apikey={os.environ['ETHERSCAN_API_KEY']}"
+    #testnet
 
     try:
         resp = requests.get(api_url)
@@ -1458,16 +1464,23 @@ def get_latest_task():
         return "Failed to process the request", 500
 
 
-infura_url = "https://mainnet.infura.io/v3/61d8ba9fbb3e4a039dca9d9813a6a566"
-Ganache_local_server_url = "HTTP://127.0.0.1:7545"
-web3 = Web3(HTTPProvider(Ganache_local_server_url))  # 状況に応じて切り替え
+# ↓mainnet
+# infura_url = "https://mainnet.infura.io/v3/61d8ba9fbb3e4a039dca9d9813a6a566"
 
-# private_key = os.environ['WALLET_KEY']  # envから送信元の秘密鍵を取得 #なぜかここで転ける
-private_key = "0x778d8d7c5aa96fe0adc7214a96cfd91e5fe1eab707bb8e345b2c4fdc19aebf0e"
+# Goerli testnet
+infra_url = "https://goerli.infura.io/v3/c6a9ba42b0364ec49e4c615f6bc4b4e1"
+
+Ganache_local_server_url = "HTTP://127.0.0.1:7545"
+
+web3 = Web3(HTTPProvider(infra_url))  # 状況に応じて切り替え
+
+# envから送信元の秘密鍵を取得 #なぜかここで転ける
+private_key = os.environ['DECARTOGRAPHY-REWARD-WALLET_PRIVATE_KEY']
+# private_key = "0x778d8d7c5aa96fe0adc7214a96cfd91e5fe1eab707bb8e345b2c4fdc19aebf0e"
 sender_account = web3.eth.account.from_key(private_key)
 
 
-def send_transaction(from_address: str, to_address: str, amount: int):
+def send_transaction(from_address: str, to_address: str):
     from_address = Web3.to_checksum_address(from_address)
     to_address = Web3.to_checksum_address(to_address)
     tx = {
@@ -1475,10 +1488,12 @@ def send_transaction(from_address: str, to_address: str, amount: int):
         'nonce': web3.eth.get_transaction_count(from_address),
         'from': from_address,
         'to': to_address,
-        'value': web3.to_wei(0.01, 'ether'),
+        # 'value': web3.to_wei(0.01, 'ether'),
+        'value': web3.to_wei(0.002, 'ether'), #$5ぐらい
         'maxFeePerGas': web3.to_wei('250', 'gwei'),
         'maxPriorityFeePerGas': web3.to_wei('3', 'gwei'),
-        'chainId': 1337
+        # 'chainId': 1337 これはgonacheの設定
+        'chainId': 5
     }
     gas = web3.eth.estimate_gas(tx)
     tx['gas'] = gas
@@ -1492,12 +1507,12 @@ def send_transaction(from_address: str, to_address: str, amount: int):
 def api_claim_eth():
     data = request.get_json()
     to_address = data.get("userAddress", "")
-    amount = data.get("amount", 1000)  # デフォルト値は 1 ETH
+    # amount = data.get("amount", 1000)  # 1000は 1 ETH
 
     # from_address = "0x23126609Cf2219198383569D1Ea5cC300bb238dc" #todo
     from_address = sender_account.address #todo
-    tx_hash = send_transaction(from_address, to_address, amount)
-    return jsonify({"message": f"{amount} ETH was sent from {from_address} to {to_address}", "tx_hash": tx_hash}), 200
+    tx_hash = send_transaction(from_address, to_address)
+    return jsonify({"message": f"5$ was sent from {from_address} to {to_address}", "tx_hash": tx_hash}), 200
 
 
 
