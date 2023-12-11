@@ -33,7 +33,8 @@ load_dotenv()
 
 app = Flask(__name__)
 CORS(app, resources={
-     r"/api/*": {"origins": "https://localhost:3000"}}, supports_credentials=True)
+    #  r"/api/*": {"origins": "https://localhost:3000"}}, supports_credentials=True)
+     r"/api/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
     #  r"/api/*": {"origins": "https://app.localhost:3000"}}, supports_credentials=True)
 
 
@@ -1500,7 +1501,15 @@ def api_claim_eth():
 
 
 
+# 一旦httpで動かす
+# if __name__ == '__main__':
+#     # app.run(debug=True, ssl_context=('cert.pem', 'key.pem'), port=1337)
+#     app.run(host='::', debug=True, ssl_context=(
+#         'cert.pem', 'key.pem'), port=1337)
+
 if __name__ == '__main__':
     # app.run(debug=True, ssl_context=('cert.pem', 'key.pem'), port=1337)
-    app.run(host='::', debug=True, ssl_context=(
-        'cert.pem', 'key.pem'), port=1337)
+    app.run(host='::', debug=True,
+        #     ssl_context=(
+        # 'cert.pem', 'key.pem'),
+        port=1337)
