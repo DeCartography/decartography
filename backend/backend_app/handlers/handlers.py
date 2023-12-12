@@ -34,9 +34,10 @@ load_dotenv()
 
 app = Flask(__name__)
 CORS(app, resources={
-    #  r"/api/*": {"origins": "https://localhost:3000"}}, supports_credentials=True)
      r"/api/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
-    #  r"/api/*": {"origins": "https://app.localhost:3000"}}, supports_credentials=True)
+
+    #todo: vercel側でfrontのURLが決定したら切り替える
+    # r"/api/*": {"origins": "https://my-app.vercel.app"}}, supports_credentials=True)
 
 
 const.SUBMIT_PASSPORT_URI = "https://api.scorer.gitcoin.co/registry/submit-passport"
