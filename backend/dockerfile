@@ -1,8 +1,27 @@
-# Use miniconda as base image
-FROM continuumio/miniconda3
+# Use an official Python runtime as a parent image
+FROM python:3.9
 
-# Update conda and install pycairo
-RUN conda update -n base -c defaults conda && \
-    conda install -c conda-forge pycairo
+# Set the working directory in the container to /app
+WORKDIR /backend
 
-CMD ["python3", "backend_app/handlers/handlers.py"]
+# Add the current directory contents into the container at /app
+ADD . /backend
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    libcairo2 \
+    libgirepository1.0-dev \
+    gcc \
+    libpango1.0-0 \
+    libpangocairo-1.0-0 \
+    gobject-introspection \
+    libglib2.0-dev
+
+# Install any needed packages specified in requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Make port 80 available to the world outside this container
+EXPOSE 80
+
+# Run app.py when the container launches
+CMD ["python", "backend_app/handlers/handlers.py"]

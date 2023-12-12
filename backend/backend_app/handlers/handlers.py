@@ -1496,7 +1496,7 @@ Ganache_local_server_url = "HTTP://127.0.0.1:7545"
 web3 = Web3(HTTPProvider(infra_url))  # 状況に応じて切り替え
 
 # envから送信元の秘密鍵を取得 #なぜかここで転ける
-private_key = os.environ['DECARTOGRAPHY-REWARD-WALLET_PRIVATE_KEY']
+private_key = os.environ['DECARTOGRAPHY_REWARD_WALLET_PRIVATE_KEY']
 # private_key = "0x778d8d7c5aa96fe0adc7214a96cfd91e5fe1eab707bb8e345b2c4fdc19aebf0e"
 sender_account = web3.eth.account.from_key(private_key)
 
