@@ -4,3 +4,5 @@ FROM continuumio/miniconda3
 # Update conda and install pycairo
 RUN conda update -n base -c defaults conda && \
     conda install -c conda-forge pycairo
+
+CMD ["python3", "backend_app/handlers/handlers.py"]
