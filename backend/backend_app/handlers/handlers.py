@@ -15,6 +15,7 @@ import random
 import sqlite3
 import const
 from typing import List
+import psycopg2
 
 import json
 from web3 import Web3, HTTPProvider
@@ -665,7 +666,9 @@ def get_task_state_from_db(cursor) -> CurrentTaskState:
 
     def initialize_task_state(cursor):
         cursor.execute(
-            "INSERT INTO TaskState (is_initial_task, initial_task_index) VALUES (?, ?)", (1, 0))
+            # "INSERT INTO TaskState (is_initial_task, initial_task_index) VALUES (?, ?)", (1, 0))
+            "INSERT INTO TaskState (is_initial_task, initial_task_index) VALUES (%s, %s)",(True, 0))
+
         cursor.connection.commit()
 
     row = fetch_task_state(cursor)
@@ -706,15 +709,18 @@ def get_task_state_from_db(cursor) -> CurrentTaskState:
 def update_task_state_to_db(cursor, is_initial_task: bool, task_state: TaskState, index: int):
     def update_initial_task(cursor, index):
         cursor.execute(
-            "UPDATE TaskState SET is_initial_task=?, initial_task_index=?", (True, index))
+            # "UPDATE TaskState SET is_initial_task=?, initial_task_index=?", (True, index))
+            "UPDATE TaskState SET is_initial_task=%s, initial_task_index=%s", (True, index))
 
     def update_subsequent_task(cursor, index):
         cursor.execute(
-            "UPDATE TaskState SET is_initial_task=?, subsequent_task_index=?", (False, index))
+            # "UPDATE TaskState SET is_initial_task=?, subsequent_task_index=?", (False, index))
+            "UPDATE TaskState SET is_initial_task=%s, subsequent_task_index=%s", (False, index))
 
     def update_additional_task(cursor, index):
         cursor.execute(
-            "UPDATE TaskState SET is_initial_task=?, additional_task_index=?", (False, index))
+            # "UPDATE TaskState SET is_initial_task=?, additional_task_index=?", (False, index))
+            "UPDATE TaskState SET is_initial_task=%s, additional_task_index=%s", (False, index))
 
     print("update_task_state_to_dbの発火")
 
@@ -1089,6 +1095,8 @@ def create_additional_task(cursor, addresses: list, CurrentTaskState: CurrentTas
 @app.route('/api/get-addresses', methods=['GET'])
 def get_addresses_and_nfts_handler() -> Response:
 
+    never_selected_address = None  # 追加
+
     # filepath = "./backend_app/static/mvp_addresses30file.json"  # 分析対象のウォレットアドレスがあるファイルパス
     filepath = "./backend_app/static/gr15_addresses.json"  # 分析対象のウォレットアドレスがあるファイルパス
     # filename = os.path.basename(filepath).split("~")[0]
@@ -1111,7 +1119,8 @@ def get_addresses_and_nfts_handler() -> Response:
     if len(addresses) < amount_param:
         return jsonify(error="Not enough addresses available"), 400
 
-    conn = sqlite3.connect('dc.db')
+    # conn = sqlite3.connect('dc.db')
+    conn = psycopg2.connect(os.environ['DATABASE_URL'])
     cursor = conn.cursor()
     CurrentTaskState = get_task_state_from_db(cursor)
     print(CurrentTaskState)
@@ -1415,14 +1424,21 @@ def insert_data_handler():
 
         selected_wallets_str = json.dumps(all_selected_wallets)
 
-        conn = sqlite3.connect('dc.db')
+        # conn = sqlite3.connect('dc.db') ファイル内のdc.dbからHerokuに上げる前提でPostgresに変更
+        conn = psycopg2.connect(os.environ['DATABASE_URL'])
+
         cursor = conn.cursor()
 
+
         # DBに保存
+        # cursor.execute(
+        #     "INSERT INTO answers (user_address, selected_wallets, is_initial_task) VALUES (?, ?, ?)",
+        #     (user_address, selected_wallets_str, is_initial_task)
+        # )
         cursor.execute(
-            "INSERT INTO answers (user_address, selected_wallets, is_initial_task) VALUES (?, ?, ?)",
+            "INSERT INTO answers (user_address, selected_wallets, is_initial_task) VALUES (%s, %s, %s)",
             (user_address, selected_wallets_str, is_initial_task)
-        )
+        ) #こっちがPostgres用のSQL
 
         conn.commit()
         conn.close()
@@ -1442,11 +1458,14 @@ def get_latest_task():
         if not wallet:
             return jsonify({"error": "No wallet address provided"}), 400
 
-        conn = sqlite3.connect('dc.db')
+        # conn = sqlite3.connect('dc.db')
+        conn = psycopg2.connect(os.environ['DATABASE_URL'])
         cursor = conn.cursor()
 
         cursor.execute(
-            'SELECT *, datetime(created_at, "localtime") as local_time FROM answers WHERE user_address = ? ORDER BY created_at DESC LIMIT 1', (wallet,))  # UTCから現地時間に変換
+            # 'SELECT *, datetime(created_at, "localtime") as local_time FROM answers WHERE user_address = ? ORDER BY created_at DESC LIMIT 1', (wallet,))  # UTCから現地時間に変換
+            'SELECT *, created_at AT TIME ZONE \'localtime\' as local_time FROM answers WHERE user_address = %s ORDER BY created_at DESC LIMIT 1', (wallet,))  # UTCから現地時間に変換
+
         # excuted result:
         # 1 | 0xF60fB76e6AD89364Af3ffE72C447882bFe390331 | [["0x1bc5ebee4738fd95bd96751c45a90889f772e0f3", "0x3812801cbf0e41413db4835a5e36228ad45e32bf", "0xdffe6d135e4396f90ba66a1024bdeb6ef5df9276"], ["0x2342e0debeffc7765ed5e771e18e96068f38d3a4", "0x88f74515cb136609eaa538f71c0e7dadd537d594", "0x9437fe6385f3551850fd892d471ffbc818cf3116"], ["0xfaaa79ed017a66f19bd08161a2ebd215150758c4", "0x5a756d9c7caa740e0342f755fa8ad32e6f83726b", "0x5976a68d20b6ae9a6fae2b12babd0ff5b43fa6b4"]] | 1 | 2023-10-31 03: 48: 39 | 2023-10-31 12: 48: 39
 
