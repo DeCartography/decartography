@@ -146,7 +146,7 @@ py-solc-x==2.0.2
 pyarrow==12.0.1
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
-pycairo @ https://github.com/pygobject/pycairo/releases/download/v1.13.1/pycairo-1.13.1.tar.gz
+https://github.com/pygobject/pycairo/releases/download/v1.13.1/pycairo-1.13.1.tar.gz
 pycodestyle==2.10.0
 pycparser==2.21
 pycryptodome==3.19.0
