@@ -5,7 +5,8 @@ import sqlite3
 from middlewares import rate_limiter
 
 app = Flask(__name__)
-CORS(app)
+# CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 @app.route('/ping', methods=['GET'])
 def ping_handler():

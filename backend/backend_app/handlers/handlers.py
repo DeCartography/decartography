@@ -33,8 +33,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app, resources={
-     r"/api/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
+# CORS(app, resources={
+#      r"/api/*": {"origins": "https://app.decartography.com/"}}, supports_credentials=True)
+CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
+# CORS(app, resources={r"/api/*": {"origins": "https://app.decartography.com"}})
 
     #todo: vercel側でfrontのURLが決定したら切り替える
     # r"/api/*": {"origins": "https://my-app.vercel.app"}}, supports_credentials=True)
@@ -182,9 +184,9 @@ def set_auth_cookie():
 
         resp = make_response("Cookies set")
         resp.set_cookie("_auth", token, secure=True,
-                        httponly=False, samesite='None')
+                        httponly=False, samesite='None', domain='.decartography.com')
         resp.set_cookie("address", address, secure=True,
-                        httponly=False, samesite='None')
+                        httponly=False, samesite='None', domain='.decartography.com')
 
         return resp
 
@@ -1543,9 +1545,14 @@ def api_claim_eth():
 #     app.run(host='::', debug=True, ssl_context=(
 #         'cert.pem', 'key.pem'), port=1337)
 
+# if __name__ == '__main__':
+#     # app.run(debug=True, ssl_context=('cert.pem', 'key.pem'), port=1337)
+#     app.run(host='::', debug=True,
+#         #     ssl_context=(
+#         # 'cert.pem', 'key.pem'),
+#         port=1337)
+
+
 if __name__ == '__main__':
-    # app.run(debug=True, ssl_context=('cert.pem', 'key.pem'), port=1337)
-    app.run(host='::', debug=True,
-        #     ssl_context=(
-        # 'cert.pem', 'key.pem'),
-        port=1337)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
