@@ -224,7 +224,7 @@ export default function Tasks() {
       }
       */
       // fetch('https://localhost:1337/api/insert-data', {
-      fetch('http://localhost:1337/api/insert-data', {
+      fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/insert-data`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -242,7 +242,8 @@ export default function Tasks() {
       // ここでPOSTでAPIを叩く
       console.error("claim_ethを叩きました")
       // fetch('https://localhost:1337/api/claim_eth', {
-      fetch('http://localhost:1337/api/claim_eth', {
+      // fetch('http://localhost:1337/api/claim_eth', {
+      fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/claim_eth`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

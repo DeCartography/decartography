@@ -54,7 +54,7 @@ async function getTransactions(): Promise<TransactionData> {
         await fetch(
           // `${process.env.BACKEND_URL}/api/get-passport-score?address=${wallet}`,
           // `https://localhost:1337/api/get-passport-score?address=${wallet}`,
-          `http://localhost:1337/api/get-passport-score?address=${wallet}`,
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/get-passport-score?address=${wallet}`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -68,7 +68,7 @@ async function getTransactions(): Promise<TransactionData> {
     const balanceRes = await fetch(
       // `${process.env.BACKEND_URL}/api/get-eth?address=${wallet}`,
       // `https://localhost:1337/api/get-eth?address=${wallet}`,
-      `http://localhost:1337/api/get-eth?address=${wallet}`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}7/api/get-eth?address=${wallet}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -81,7 +81,7 @@ async function getTransactions(): Promise<TransactionData> {
     const transactionsRes = await fetch(
       // `${process.env.BACKEND_URL}/api/get-txs?address=${wallet}`,
       // `https://localhost:1337/api/get-txs?address=${wallet}`,
-      `http://localhost:1337/api/get-txs?address=${wallet}`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/get-txs?address=${wallet}`,
       {
         headers: {
           "Content-Type": "application/json",

@@ -36,7 +36,7 @@ export const handleLogin = async (): Promise<string | Error> => {
     // );
     const response = await fetch(
       // `https://localhost:1337/api/signing-message?address=${account}`,
-      `http://localhost:1337/api/signing-message?address=${account}`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/signing-message?address=${account}`,
     );
     const result = await response.json();
     const signingMessage = result.signing_message;
