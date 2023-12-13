@@ -55,7 +55,7 @@ export const handleLogin = async (): Promise<string | Error> => {
     // Send authentication details to the backend for verification
     // const authResponse = await fetch(`${baseUrl}/api/submit-passport`, {
       // const authResponse = await fetch(`https://localhost:1337/api/submit-passport`, {
-      const authResponse = await fetch(`http://localhost:1337/api/submit-passport`, {
+    const authResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/submit-passport`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

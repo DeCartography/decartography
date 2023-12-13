@@ -12,6 +12,7 @@ import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 
+
 import jwtDecode from "jwt-decode";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
@@ -186,18 +187,25 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         const decoded: JWTContent = jwtDecode(token); // トークンのデコード
 
         // console.log("createCookie"); // debug
+        // resp = make_response(jsonify({ "token": token }))
+        // resp.set_cookie("_auth", token, secure = True,
+        //   httponly = False, samesite = 'None')
+        await createCookie({
+          name: "_auth",
+          value: token,
+          // httpOnly: true,
+          httpOnly: false,
+          expires: (decoded?.exp || 0) * 1000,
+        });
         // await createCookie({
-        //   name: "_auth",
-        //   value: token,
-        //   httpOnly: true,
-        //   expires: (decoded?.exp || 0) * 1000,
-        // });
         await createCookie({
           name: "address",
           value: decoded?.address,
-          httpOnly: true,
+          // httpOnly: true,
+          httpOnly: false,
           expires: (decoded?.exp || 0) * 1000,
         });
+        // これは発火している
 
 
         // // サーバーにトークンを送信して_auth Cookieを設定
@@ -211,7 +219,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         // });
 
         // const response = await fetch("https://localhost:1337/api/set-auth-cookie", {
-        const response = await fetch("http://localhost:1337/api/set-auth-cookie", {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/set-auth-cookie`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -220,6 +228,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           body: JSON.stringify({ token, address: decoded?.address }), // addressも送信
         });
 
+        console.log("response", response)
 
         if (response.ok) {
           // const decoded: JWTContent = jwtDecode(token);
@@ -242,6 +251,8 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
             title: "Yay! You're logged in.",
             description: "Redirecting...",
           });
+
+          console.log("try push")
 
           return router.push("/");
         }

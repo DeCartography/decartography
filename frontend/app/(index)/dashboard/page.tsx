@@ -68,7 +68,7 @@ async function getTransactions(): Promise<TransactionData> {
     const balanceRes = await fetch(
       // `${process.env.BACKEND_URL}/api/get-eth?address=${wallet}`,
       // `https://localhost:1337/api/get-eth?address=${wallet}`,
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}7/api/get-eth?address=${wallet}`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/get-eth?address=${wallet}`,
       {
         headers: {
           "Content-Type": "application/json",
