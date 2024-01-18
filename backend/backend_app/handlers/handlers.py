@@ -27,9 +27,6 @@ from dotenv import load_dotenv
 # from crypto import claim
 
 
-
-
-
 load_dotenv()
 
 app = Flask(__name__)
@@ -38,8 +35,8 @@ app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 # CORS(app, resources={r"/api/*": {"origins": "https://app.decartography.com"}})
 
-    #todo: vercel側でfrontのURLが決定したら切り替える
-    # r"/api/*": {"origins": "https://my-app.vercel.app"}}, supports_credentials=True)
+# todo: vercel側でfrontのURLが決定したら切り替える
+# r"/api/*": {"origins": "https://my-app.vercel.app"}}, supports_credentials=True)
 
 
 const.SUBMIT_PASSPORT_URI = "https://api.scorer.gitcoin.co/registry/submit-passport"
@@ -205,7 +202,6 @@ def ethereum_transactions_handler():
 
     api_url = f"https://api-goerli.etherscan.io/api?module=account&action=txlist&address={address}&sort=desc&apikey={os.environ['ETHERSCAN_API_KEY']}"
 
-
     try:
         resp = requests.get(api_url)
     except Exception as e:
@@ -232,7 +228,7 @@ def ether_balance_handler():
     # api_url = f"https://api.etherscan.io/api?module=account&action=balance&address={address}&tag=latest&apikey={os.environ['ETHERSCAN_API_KEY']}"
 
     api_url = f"https://api-goerli.etherscan.io/api?module=account&action=balance&address={address}&tag=latest&apikey={os.environ['ETHERSCAN_API_KEY']}"
-    #testnet
+    # testnet
 
     try:
         resp = requests.get(api_url)
@@ -596,7 +592,7 @@ def get_passport_score_handler():
 #     return jsonify({"address_to_raw_uris": address_to_raw_uris, "is_initial_task": is_initial_task}), 200
 
 
-def fetch_nfts(address: Address) -> List[str]: #アドレスを渡せばNFTのURIを含むlistが取得できる
+def fetch_nfts(address: Address) -> List[str]:  # アドレスを渡せばNFTのURIを含むlistが取得できる
     alchemy_url = f"https://eth-mainnet.g.alchemy.com/nft/v3/{os.environ['ALCHEMY_API_KEY']}/getNFTsForOwner?owner={address}&withMetadata=true&pageKey=1&pageSize=10"
     response = requests.get(alchemy_url)
     if response.status_code != 200:
@@ -623,7 +619,6 @@ def fetch_nfts(address: Address) -> List[str]: #アドレスを渡せばNFTのUR
 #         ]
 
 #     return extract_image_urls(alchemy_response) if alchemy_response else []
-
 
 
 # def get_task_state_from_db(cursor) -> CurrentTaskState: #DBからTaskStateを取得する
@@ -670,7 +665,7 @@ def get_task_state_from_db(cursor) -> CurrentTaskState:
     def initialize_task_state(cursor):
         cursor.execute(
             # "INSERT INTO TaskState (is_initial_task, initial_task_index) VALUES (?, ?)", (1, 0))
-            "INSERT INTO TaskState (is_initial_task, initial_task_index) VALUES (%s, %s)",(True, 0))
+            "INSERT INTO TaskState (is_initial_task, initial_task_index) VALUES (%s, %s)", (True, 0))
 
         cursor.connection.commit()
 
@@ -681,7 +676,6 @@ def get_task_state_from_db(cursor) -> CurrentTaskState:
     else:
         initialize_task_state(cursor)
         return CurrentTaskState(TaskState.INITIAL_TASK, 0)
-
 
 
 # def update_task_state_to_db(cursor, is_initial_task, initial_task_index, subsequent_task_index, additional_task_index):
@@ -740,7 +734,6 @@ def update_task_state_to_db(cursor, is_initial_task: bool, task_state: TaskState
     cursor.connection.close()
 
 
-
 # def create_initial_task(cursor, addresses: list, CurrentTaskState: CurrentTaskState, amount_param: int, is_swap: bool) -> AddressesForTask:
 #     print("create_intiial_task関数の実行")
 
@@ -773,7 +766,8 @@ def create_initial_task(cursor, addresses: list, CurrentTaskState: CurrentTaskSt
 
     else:
         # addressesを6つずつに分割
-        all_initial_tasks = [addresses[i:i+6] for i in range(0, len(addresses), 6)]
+        all_initial_tasks = [addresses[i:i+6]
+                             for i in range(0, len(addresses), 6)]
         addresses_for_task = all_initial_tasks[CurrentTaskState.index]
         CurrentTaskState.index += 1
 
@@ -788,12 +782,9 @@ def create_initial_task(cursor, addresses: list, CurrentTaskState: CurrentTaskSt
             update_task_state_to_db(cursor, is_initial_task=True,
                                     task_state=CurrentTaskState.TaskState, index=CurrentTaskState.index)
             print("update_task_state_to_dbに対して" + str(CurrentTaskState.TaskState) +
-                "と" + str(CurrentTaskState.index) + "を渡しました")
+                  "と" + str(CurrentTaskState.index) + "を渡しました")
 
         return addresses_for_task
-
-
-
 
     # addresses_for_task = random.sample(addresses, k=amount_param) if is_swap else
 
@@ -850,13 +841,13 @@ def create_subsequent_task(cursor, addresses: list, CurrentTaskState: CurrentTas
         all_selected_addresses = [
             address for row in rows if row[1] for address in json.loads(row[0])]  # 今までinitial_taskで選ばれたアドレスのリスト
         address_count = Counter(tuple(address)
-                            for address in all_selected_addresses)
+                                for address in all_selected_addresses)
 
         # 各クラウドワーカーが選択したウォレットアドレスの出現回数を集計し、出現回数が最も多いウォレットアドレスをgolden_standardにする
         golden_standard = address_count.most_common(1)[0][0]
         return golden_standard
 
-    def generate_subsequent_tasks(addresses, golden_standard)-> List:
+    def generate_subsequent_tasks(addresses, golden_standard) -> List:
         all_subsequent_tasks = []
         # golden_standardに近いアドレスをsubsequent_tasksにする
         for address in golden_standard:
@@ -887,7 +878,6 @@ def create_subsequent_task(cursor, addresses: list, CurrentTaskState: CurrentTas
         if CurrentTaskState.index >= all_subsequent_tasks_length:
             CurrentTaskState.index = 0
             CurrentTaskState.TaskState = TaskState.ADDITIONAL_TASK
-
 
     # DBから初期タスクのアドレスを取得
     collected_answer_as_initial_task = fetch_collected_answer(cursor)
@@ -1101,7 +1091,9 @@ def get_addresses_and_nfts_handler() -> Response:
     never_selected_address = None  # 追加
 
     # filepath = "./backend_app/static/mvp_addresses30file.json"  # 分析対象のウォレットアドレスがあるファイルパス
-    filepath = "./backend_app/static/gr15_addresses.json"  # 分析対象のウォレットアドレスがあるファイルパス
+    # filepath = "./backend_app/static/gr15_addresses.json"  # 分析対象のウォレットアドレスがあるファイルパス
+    # GR03分析用に変更
+    filepath = "./backend_app/static/GR03_unique_contributer.json"
     # filename = os.path.basename(filepath).split("~")[0]
 
     # 分析対象のファイルからアドレスを抜きだす
@@ -1432,7 +1424,6 @@ def insert_data_handler():
 
         cursor = conn.cursor()
 
-
         # DBに保存
         # cursor.execute(
         #     "INSERT INTO answers (user_address, selected_wallets, is_initial_task) VALUES (?, ?, ?)",
@@ -1441,7 +1432,7 @@ def insert_data_handler():
         cursor.execute(
             "INSERT INTO answers (user_address, selected_wallets, is_initial_task) VALUES (%s, %s, %s)",
             (user_address, selected_wallets_str, is_initial_task)
-        ) #こっちがPostgres用のSQL
+        )  # こっちがPostgres用のSQL
 
         conn.commit()
         conn.close()
@@ -1512,7 +1503,7 @@ def send_transaction(from_address: str, to_address: str):
         'from': from_address,
         'to': to_address,
         # 'value': web3.to_wei(0.01, 'ether'),
-        'value': web3.to_wei(0.002, 'ether'), #$5ぐらい
+        'value': web3.to_wei(0.002, 'ether'),  # $5ぐらい
         'maxFeePerGas': web3.to_wei('250', 'gwei'),
         'maxPriorityFeePerGas': web3.to_wei('3', 'gwei'),
         # 'chainId': 1337 これはgonacheの設定
@@ -1533,10 +1524,9 @@ def api_claim_eth():
     # amount = data.get("amount", 1000)  # 1000は 1 ETH
 
     # from_address = "0x23126609Cf2219198383569D1Ea5cC300bb238dc" #todo
-    from_address = sender_account.address #todo
+    from_address = sender_account.address  # todo
     tx_hash = send_transaction(from_address, to_address)
     return jsonify({"message": f"5$ was sent from {from_address} to {to_address}", "tx_hash": tx_hash}), 200
-
 
 
 # 一旦httpで動かす
@@ -1551,7 +1541,6 @@ def api_claim_eth():
 #         #     ssl_context=(
 #         # 'cert.pem', 'key.pem'),
 #         port=1337)
-
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
